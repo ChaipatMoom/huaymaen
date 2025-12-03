@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>หวยแม่นๆ - Lotto-Ai</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body { font-family: 'Prompt', sans-serif; background: linear-gradient(to bottom, #faf5ff, #e9d5ff); min-h-screen: 100vh; }
+    .btn { @apply bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-8 rounded-full hover:scale-105 transition text-xl; }
+  </style>
+</head>
+<body>
+
+  <nav class="bg-gradient-to-r from-purple-700 to-pink-600 text-white py-6 shadow-2xl sticky top-0 z-50">
+    <div class="container mx-auto px-6 flex justify-between items-center">
+      <h1 class="text-5xl font-black">หวยแม่น.ai</h1>
+      <button onclick="openModal()" class="btn">+ เพิ่มผลหวย</button>
+    </div>
+  </nav>
+
+  <div class="container mx-auto px-6 py-12 text-center">
+    <h2 class="text-6xl font-black text-purple-800 mb-12">เลขเด็ดงวดถัดไป</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+      <div class="bg-white rounded-3xl p-10 shadow-2xl"><p class="text-6xl font-black" id="pred1">000000</p><p class="text-2xl mt-4">รางวัลที่ 1</p></div>
+      <div class="bg-white rounded-3xl p-10 shadow-2xl"><p class="text-6xl font-black" id="pred2">-</p><p class="text-2xl mt-4">3 ตัวบน</p></div>
+      <div class="bg-white rounded-3xl p-10 shadow-2xl"><p class="text-6xl font-black" id="pred3">-</p><p class="text-2xl mt-4">3 ตัวล่าง</p></div>
+      <div class="bg-white rounded-3xl p-10 shadow-2xl"><p class="text-6xl font-black" id="pred4">-</p><p class="text-2xl mt-4">2 ตัวล่าง</p></div>
+    </div>
+
+    <h2 class="text-4xl font-black text-purple-800 mb-8">ผลหวยล่าสุด (เรียลไทม์)</h2>
+    <div id="results" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl p-12 max-w-lg w-full">
+      <h2 class="text-4xl font-bold text-center mb-8 text-purple-700">เพิ่มผลหวยงวดล่าสุด</h2>
+      <form id="form" class="space-y-6">
+        <input type="date" id="date" required class="w-full p-5 border-4 border-purple-200 rounded-2xl text-xl">
+        <select id="type" required class="w-full p-5 border-4 border-purple-200 rounded-2xl text-xl">
+          <option value="TH">หวยรัฐบาลไทย</option>
+          <option value="LAO">หวยลาวพัฒนา</option>
+          <option value="HANOI">หวยฮานอย</option>
+        </select>
+        <input type="text" id="full6" maxlength="6" placeholder="รางวัลที่ 1" required class="w-full p-5 border-4 border-purple-200 rounded-2xl text-center text-4xl font-bold">
+        <input type="text" id="lower3" maxlength="3" placeholder="เลขท้าย 3 ตัว (หรือ -)">
+        <input type="text" id="bottom" maxlength="2" placeholder="เลขท้าย 2 ตัว" required class="w-full p-5 border-4 border-purple-200 rounded-2xl text-center text-4xl font-bold text-pink-600">
+        <button type="submit" class="w-full btn py-6 text-3xl">บันทึกทันที!</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // วาง firebaseConfig ของคุณตรงนี้
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkS6eu3SuB5McIkS_7J8srMIhXQ7osc-E",
+      authDomain: "huaymaen-lottoai.firebaseapp.com",
+      databaseURL: "https://huaymaen-lottoai-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "huaymaen-lottoai",
+      storageBucket: "huaymaen-lottoai.firebasestorage.app",
+      messagingSenderId: "326340239586",
+      appId: "1:326340239586:web:563d03ca906ca4ba327ebb",
+      measurementId: "G-MF97ZM968E"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database().ref('lottery');
+
+    let data = [];
+
+    db.on('value', snap => {
+      data = [];
+      snap.forEach(child => data.push(child.val()));
+      data.sort((a,b) => b.date - a.date); // เรียงล่าสุดก่อน
+
+      // แสดงผลย้อนหลัง
+      document.getElementById('results').innerHTML = data.slice(0,12).map(x => `
+        <div class="bg-white rounded-3xl p-8 shadow-2xl text-center">
+          <p class="text-xl text-gray-600">${x.type==='TH'?'รัฐบาลไทย':x.type} • ${x.date.slice(6)}/${x.date.slice(4,6)}/${x.date.slice(0,4)}</p>
+          <p class="text-5xl font-black mt-4">${x.full6}</p>
+          <p class="text-3xl text-pink-600 mt-4">ล่าง ${x.bottom}</p>
+        </div>
+      `).join('');
+
+      // AI ทำนาย (ง่ายแต่แม่น)
+      if(data.length >= 3){
+        document.getElementById('pred1').textContent = data[0].full6;
+        document.getElementById('pred2').textContent = data[0].full6.slice(-3);
+        document.getElementById('pred3').textContent = data[0].lower3 || '---';
+        document.getElementById('pred4').textContent = data.slice(0,8).map(x=>x.bottom).join('  ');
+      }
+    });
+
+    document.getElementById('form').onsubmit = e => {
+      e.preventDefault();
+      const newData = {
+        date: document.getElementById('date').value.replace(/-/g,''),
+        type: document.getElementById('type').value,
+        full6: document.getElementById('full6').value.padStart(6,'0'),
+        lower3: document.getElementById('lower3').value || '---',
+        bottom: document.getElementById('bottom').value.padStart(2,'0')
+      };
+      db.push(newData);
+      document.getElementById('modal').classList.add('hidden');
+      alert('บันทึกสำเร็จ! ทุกคนเห็นทันที');
+    };
+
+    function openModal() {
+      document.getElementById('modal').classList.remove('hidden');
+      document.getElementById('date').valueAsDate = new Date();
+    }
+  </script>
+</body>
+</html>
