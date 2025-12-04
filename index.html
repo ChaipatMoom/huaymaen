@@ -270,6 +270,124 @@ body.bg-moon {
 .text-gold { color: var(--gold); }
 .muted { color: rgba(255,255,255,0.6); font-size:13px; }
 
+/* ============================
+      RESPONSIVE IMPROVEMENTS
+   ============================ */
+
+/* Mobile-first base adjustments */
+body.bg-moon {
+  min-height: 100vh;
+  padding-bottom: 20px;
+}
+
+/* Mobile: Reduce padding and font sizes */
+@media (max-width: 640px) {
+  .btn-primary {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .card {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  
+  .aura-card {
+    padding: 16px 12px !important;
+  }
+  
+  .dd-btn {
+    min-width: 100px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .input-dd {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 10px 8px;
+  }
+  
+  h1 { font-size: 24px !important; }
+  h2 { font-size: 18px !important; }
+  h3 { font-size: 16px !important; }
+}
+
+/* Tablet: Moderate adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .btn-primary { padding: 10px 16px; font-size: 14px; }
+  .card { padding: 14px; }
+  .input-dd { font-size: 14px; }
+}
+
+/* Desktop: Full optimizations */
+@media (min-width: 1025px) {
+  .btn-primary { padding: 11px 18px; font-size: 14px; }
+  .card { padding: 16px; }
+  .aura-card { padding: 24px !important; }
+  .dd-btn { min-width: 140px; }
+}
+
+/* Header responsiveness */
+@media (max-width: 768px) {
+  .header-container { flex-wrap: wrap; gap: 12px; }
+  .header-left { width: 100%; margin-bottom: 8px; }
+  .header-right { width: 100%; justify-content: flex-start; }
+}
+
+/* Stat Grid */
+@media (max-width: 640px) { .stat-grid { grid-template-columns: 1fr; } }
+@media (min-width: 641px) and (max-width: 1024px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1025px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* Result Grid */
+@media (max-width: 640px) { .result-grid { grid-template-columns: 1fr; } }
+@media (min-width: 641px) and (max-width: 1024px) { .result-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1025px) { .result-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* AI Result grid */
+@media (max-width: 640px) {
+  .ai-result-grid { grid-template-columns: 1fr; gap: 12px; }
+  .ai-result-grid .card > div:first-child { font-size: 11px; }
+}
+@media (min-width: 641px) and (max-width: 1024px) {
+  .ai-result-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1025px) {
+  .ai-result-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Modal responsiveness */
+@media (max-width: 640px) {
+  .modal { padding: 16px; }
+  .modal-aura { max-width: 90vw; max-height: 90vh; overflow-y: auto; }
+}
+
+/* Simulator grid */
+@media (max-width: 640px) {
+  .simulator-grid { grid-template-columns: 1fr; }
+  .simulator-grid input { width: 100%; }
+  .simulator-grid select { width: 100%; }
+  .simulator-grid button { grid-column: 1; }
+}
+@media (min-width: 641px) and (max-width: 1024px) {
+  .simulator-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (min-width: 1025px) {
+  .simulator-grid { grid-template-columns: repeat(7, 1fr); }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  .btn-primary, .dd-btn, .dd-item {
+    padding: 12px 16px;
+    font-size: 14px;
+    min-height: 44px;
+  }
+  .input-dd { min-height: 44px; font-size: 16px; }
+  .card:hover { transform: none; }
+  .result-card:hover { transform: none; }
+}
+
   </style>
 </head>
 
@@ -332,28 +450,32 @@ body.bg-moon {
   </div>
 
   <!-- HEADER / TOP -->
-  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,var(--accent1),var(--accent2)); box-shadow:0 0 18px var(--glow);">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.6 5.8L21 9l-4.5 3.3L17.2 20 12 16.9 6.8 20l.7-7.7L3 9l6.4-1.2L12 2z"/></svg>
+  <div class="max-w-6xl mx-auto px-4 py-3 sm:py-4 header-container flex items-center justify-between">
+    <div class="header-left flex items-center gap-2 sm:gap-3">
+      <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,var(--accent1),var(--accent2)); box-shadow:0 0 18px var(--glow);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2l2.6 5.8L21 9l-4.5 3.3L17.2 20 12 16.9 6.8 20l.7-7.7L3 9l6.4-1.2L12 2z"/></svg>
       </div>
       <div>
-        <div class="text-xl font-bold text-gold">LottoGenius AI</div>
+        <div class="text-lg sm:text-xl font-bold text-gold">LottoGenius AI</div>
         <div class="muted text-xs">Lucky Aura · Ensemble</div>
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
-      <button onclick="openAddModal()" class="btn-primary flex items-center gap-2">
+    <div class="header-right flex items-center gap-2 sm:gap-3">
+      <button onclick="openAddModal()" class="btn-primary hidden sm:flex items-center gap-2">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 5v14m7-7H5" stroke="white" stroke-width="2"/></svg>
-        เพิ่มผลรางวัล
+        <span class="hidden sm:inline">เพิ่มผลรางวัล</span>
+      </button>
+      
+      <button onclick="openAddModal()" class="btn-primary sm:hidden px-3">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 5v14m7-7H5" stroke="white" stroke-width="2"/></svg>
       </button>
 
       <!-- dropdown trigger -->
       <div class="relative">
-        <button onclick="toggleDD()" class="dd-btn flex items-center gap-2">
+        <button onclick="toggleDD()" class="dd-btn flex items-center gap-1 sm:gap-2">
           <span id="ddFlag">🇹🇭</span>
-          <span id="ddLabel">ไทย</span>
+          <span id="ddLabel" class="hidden sm:inline">ไทย</span>
         </button>
 
         <div id="ddMenu" class="dd-menu hidden">
@@ -366,48 +488,47 @@ body.bg-moon {
   </div>
 
   <!-- AI AURA CARD -->
-  <div class="max-w-6xl mx-auto px-4">
-    <div class="aura-card p-6 mt-4">
-      <h2 class="text-lg font-bold text-white mb-3">🌟 แนวทาง AI (Lucky Aura)</h2>
+  <div class="max-w-6xl mx-auto px-4 mt-3 sm:mt-4">
+    <div class="aura-card p-4 sm:p-6 mt-3 sm:mt-4">
+      <h2 class="text-base sm:text-lg font-bold text-white mb-3">🌟 แนวทาง AI (Lucky Aura)</h2>
 
-      <div id="aiLoading" class="hidden text-center my-6">
+      <div id="aiLoading" class="hidden text-center my-4 sm:my-6">
         <div class="ai-spinner"></div>
-        <p class="text-white/60 mt-2 text-sm">AI กำลังประมวลผลพลังงานตัวเลข...</p>
+        <p class="text-white/60 mt-2 text-xs sm:text-sm">AI กำลังประมวลผลพลังงานตัวเลข...</p>
       </div>
 
-      <div id="aiResult" class="grid grid-cols-1 md:grid-cols-4 gap-4 text-white">
+      <div id="aiResult" class="ai-result-grid grid gap-3 sm:gap-4 text-white">
         <div class="card">
-          <div class="text-sm muted">รางวัลที่ 1 (6 หลัก)</div>
-          <div id="aiSix" class="text-2xl font-bold">—</div>
+          <div class="text-xs sm:text-sm muted">รางวัลที่ 1 (6 หลัก)</div>
+          <div id="aiSix" class="text-xl sm:text-2xl font-bold mt-1">—</div>
         </div>
 
         <div class="card">
-          <div class="text-sm muted">🎯 3 ตัวบน</div>
-          <div id="aiTop3" class="text-xl font-semibold">—</div>
+          <div class="text-xs sm:text-sm muted">🎯 3 ตัวบน</div>
+          <div id="aiTop3" class="text-lg sm:text-xl font-semibold mt-1">—</div>
         </div>
 
         <div class="card">
-          <div class="text-sm muted">🎲 3 ตัวล่าง</div>
-          <div id="aiBottom3" class="text-xl font-semibold">—</div>
+          <div class="text-xs sm:text-sm muted">🎲 3 ตัวล่าง</div>
+          <div id="aiBottom3" class="text-lg sm:text-xl font-semibold mt-1">—</div>
         </div>
 
         <div class="card">
-          <div class="text-sm muted">✨ 2 ตัวล่าง</div>
-          <div id="aiTwo" class="text-xl font-semibold">—</div>
+          <div class="text-xs sm:text-sm muted">✨ 2 ตัวล่าง</div>
+          <div id="aiTwo" class="text-lg sm:text-xl font-semibold mt-1">—</div>
           <div class="text-xs muted mt-2">Confidence: <span id="aiScore">—%</span></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- PART 2 and PART 3 will continue after this block -->
   <!-- ===============================
        MAIN CONTENT
        =============================== -->
-  <main class="max-w-6xl mx-auto px-4 mt-8">
+  <main class="max-w-6xl mx-auto px-4 mt-6 sm:mt-8">
 
     <!-- STAT CARDS -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <section class="stat-grid grid gap-4 sm:gap-6 mb-8 sm:mb-10">
 
       <!-- Frequent 2 Digits -->
       <div class="card">
@@ -468,7 +589,7 @@ body.bg-moon {
       </div>
 
       <!-- History List -->
-      <div id="historyList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+      <div id="historyList" class="result-grid grid gap-3 sm:gap-4"></div>
     </section>
 
 
@@ -479,7 +600,7 @@ body.bg-moon {
     <section class="card p-5 mb-10">
       <h3 class="font-semibold text-white mb-4">🧪 เพิ่มผลรางวัลใหม่ (Simulator)</h3>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
+      <div class="simulator-grid grid gap-2 sm:gap-3">
         
         <select id="simType" class="input-dd">
           <option value="TH">🇹🇭 ไทย</option>
