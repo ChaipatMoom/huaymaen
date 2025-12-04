@@ -33,122 +33,159 @@
     <!-- Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
       <div class="card p-6 text-center">
-        <h3 class="text-2xl font-bold text-purple-600 mb-4">🔥 เลขท้าย 2 ตัว ที่ออกบ่อยสุด</h3>
+        <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-purple-600 mb-4">🔥 เลขท้าย 2 ตัว ที่ออกบ่อยสุด</h3>
         <div class="flex justify-center gap-3 flex-wrap">
-          <span class="bg-orange-100 text-orange-800 px-5 py-3 rounded-full text-xl font-bold">89</span>
-          <span class="bg-pink-100 text-pink-800 px-5 py-3 rounded-full text-xl font-bold">12</span>
-          <span class="bg-yellow-100 text-yellow-800 px-5 py-3 rounded-full text-xl font-bold">23</span>
-          <span class="bg-purple-100 text-purple-800 px-5 py-3 rounded-full text-xl font-bold">44</span>
-          <span class="bg-blue-100 text-blue-800 px-5 py-3 rounded-full text-xl font-bold">64</span>
+          <span class="bg-orange-100 text-orange-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">89</span>
+          <span class="bg-pink-100 text-pink-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">12</span>
+          <span class="bg-yellow-100 text-yellow-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">23</span>
+          <span class="bg-purple-100 text-purple-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">44</span>
+          <span class="bg-blue-100 text-blue-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">64</span>
         </div>
       </div>
-
+      
       <div class="card p-6 text-center">
-        <h3 class="text-2xl font-bold text-purple-600 mb-4">⚖️ สถิติบน vs ล่าง</h3>
+        <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-purple-600 mb-4">⚖️ สถิติบน vs ล่าง</h3>
         <canvas id="pieChart" height="150"></canvas>
       </div>
 
       <div class="card p-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-        <h3 class="text-2xl font-bold mb-4">🔮 แนวทาง AI (Ensemble Stats)</h3>
-        <div class="space-y-3 text-lg">
+        <h3 class="text-lg sm:text-xl md:text-2xl font-bold mb-4">🔮 แนวทาง AI</h3>
+        <div class="space-y-2 text-sm sm:text-base md:text-lg">
           <div>รางวัลที่ 1 : <strong>386998</strong></div>
           <div>3 ตัวบน: <strong>445, 129, 578</strong></div>
           <div>3 ตัวล่าง: <strong>733, 662, 197</strong></div>
-          <div>2 ตัวล่าง: <strong>75, 83, 39, 75, 79</strong></div>
-          <div class="text-sm opacity-90 mt-3">คำนวณจาก Frequency + Delta Ensemble</div>
+          <div>2 ตัวล่าง: <strong>75, 83, 39</strong></div>
+          <div class="text-xs sm:text-sm opacity-90 mt-3">Frequency + Delta</div>
         </div>
       </div>
     </div>
 
     <!-- 📜 ผลรางวัลย้อนหลัง -->
-    <div class="card p-8 mb-8">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-3xl font-black text-purple-700">ผลรางวัลย้อนหลัง</h2>
-        <select class="border-2 border-purple-300 rounded-xl px-4 py-2">
+    <div class="card p-6 sm:p-8 mb-8">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h2 class="text-2xl sm:text-3xl font-black text-purple-700">ผลรางวัลย้อนหลัง</h2>
+        <select id="filterType" onchange="renderResults()" class="border-2 border-purple-300 rounded-xl px-4 py-2 text-sm sm:text-base">
           <option value="all">ทั้งหมด</option>
-          <option value="TH">🇹🇭 หวยรัฐบาลไทย</option>
-          <option value="LAO">🇱🇦 หวยลาวพัฒนา</option>
-          <option value="HANOI">🇻🇳 หวยฮานอย</option>
+          <option value="TH">🇹🇭 ไทย</option>
+          <option value="LAO">🇱🇦 ลาว</option>
+          <option value="HANOI">🇻🇳 ฮานอย</option>
         </select>
       </div>
 
-      <div id="results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div id="results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         <!-- จะถูกเติมด้วย JavaScript -->
       </div>
     </div>
 
     <!-- Simulator -->
-    <div class="card p-8 bg-gradient-to-r from-indigo-50 to-purple-50">
-      <h2 class="text-3xl font-black text-purple-700 mb-6"> 📝 เพิ่มผลรางวัลใหม่ (Simulator)</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-        <select class="p-4 border-2 border-purple-300 rounded-xl">
+    <div class="card p-6 sm:p-8 bg-gradient-to-r from-indigo-50 to-purple-50">
+      <h2 class="text-2xl sm:text-3xl font-black text-purple-700 mb-4 sm:mb-6">📝 เพิ่มผลรางวัลใหม่</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 items-end">
+        <select id="simType" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-sm sm:text-base">
            <option value="TH">🇹🇭 ไทย</option>
            <option value="LAO">🇱🇦 ลาว</option>
            <option value="HANOI">🇻🇳 ฮานอย</option>
         </select>
-        <input type="date" class="p-4 border-2 border-purple-300 rounded-xl">
-        <input type="text" maxlength="6" placeholder="รางวัลที่ 1" class="p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-xl">
-        <input type="text" maxlength="3" placeholder="3 ตัวล่าง" class="p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-xl">
-        <input type="text" maxlength="2" placeholder="2 ตัวล่าง" class="p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-xl text-pink-600">
-        <button class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 rounded-xl text-xl">บันทึก</button>
+        <input type="date" id="simDate" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-sm sm:text-base">
+        <input type="text" id="simFull6" maxlength="6" placeholder="รางวัลที่ 1" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-lg sm:text-xl">
+        <input type="text" id="simLower3a" maxlength="3" placeholder="3 ตัวล่าง (1)" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-lg sm:text-xl text-green-600">
+        <input type="text" id="simLower3b" maxlength="3" placeholder="3 ตัวล่าง (2)" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-lg sm:text-xl text-green-600">
+        <input type="text" id="simBottom" maxlength="2" placeholder="2 ตัวล่าง" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-lg sm:text-xl text-pink-600">
+        <button type="button" onclick="saveSimulator()" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 sm:py-4 rounded-xl text-sm sm:text-base">บันทึก</button>
       </div>
     </div>
   </div>
 
   <!-- Modal เพิ่มผลหวย -->
   <div id="modal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center z-50 p-4">
-    <div class="card p-10 max-w-md w-full relative">
-      <button onclick="closeModal()" class="absolute top-4 right-6 text-4xl text-gray-400 hover:text-gray-700">&times;</button>
-      <h2 class="text-4xl font-bold text-center mb-8 text-purple-700">เพิ่มผลหวยงวดล่าสุด</h2>
-      <form id="form" class="space-y-6">
-        <input type="date" id="date" required class="w-full p-5 border-4 border-purple-200 rounded-2xl text-xl">
-        <select id="type" required class="w-full p-5 border-4 border-purple-200 rounded-2xl text-xl">
+    <div class="card p-6 sm:p-8 lg:p-10 w-full max-w-sm sm:max-w-md lg:max-w-lg relative">
+      <button onclick="closeModal()" class="absolute top-3 sm:top-4 lg:top-6 right-4 sm:right-6 lg:right-8 text-3xl sm:text-4xl lg:text-5xl text-gray-400 hover:text-gray-700">&times;</button>
+      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-6 sm:mb-8 lg:mb-10 text-purple-700">เพิ่มผลหวยงวดล่าสุด</h2>
+      <form id="form" class="space-y-4 sm:space-y-5 lg:space-y-6">
+        <input type="date" id="date" required class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-sm sm:text-base lg:text-lg">
+        <select id="type" required class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-sm sm:text-base lg:text-lg">
           <option value="TH">หวยรัฐบาลไทย</option>
           <option value="LAO">หวยลาวพัฒนา</option>
           <option value="HANOI">หวยฮานอย</option>
         </select>
-        <input type="text" id="full6" maxlength="6" placeholder="รางวัลที่ 1" required class="w-full p-5 border-4 border-purple-200 rounded-2xl text-center text-4xl font-bold">
-        <input type="text" id="lower3" maxlength="3" placeholder="เลขท้าย 3 ตัว" class="w-full p-5 border-4 border-purple-200 rounded-2xl text-center text-4xl font-bold text-green-600">
-        <input type="text" id="bottom" maxlength="2" placeholder="เลขท้าย 2 ตัว" required class="w-full p-5 border-4 border-purple-200 rounded-2xl text-center text-4xl font-bold text-pink-600">
-        <div class="flex gap-4">
-          <button type="submit" class="flex-1 btn-primary py-5 text-2xl">บันทึกทันที!</button>
-          <button type="button" onclick="closeModal()" class="flex-1 bg-gray-300 text-gray-700 font-bold py-5 rounded-full text-2xl">ยกเลิก</button>
+        <input type="text" id="full6" maxlength="6" placeholder="รางวัลที่ 1" required class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-center text-2xl sm:text-3xl lg:text-4xl font-bold">
+        <input type="text" id="lower3a" maxlength="3" placeholder="3 ตัวล่าง (1)" class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-center text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">
+        <input type="text" id="lower3b" maxlength="3" placeholder="3 ตัวล่าง (2)" class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-center text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">
+        <input type="text" id="bottom" maxlength="2" placeholder="เลขท้าย 2 ตัว" required class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-center text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600">
+        <div class="flex gap-3 sm:gap-4 lg:gap-5">
+          <button type="submit" class="flex-1 btn-primary py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-xl">บันทึก!</button>
+          <button type="button" onclick="closeModal()" class="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 lg:py-5 rounded-full text-sm sm:text-base lg:text-xl hover:bg-gray-400">ยกเลิก</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    // วาง firebaseConfig ของคุณตรงนี้
-    const firebaseConfig = { /* ของคุณจริง ๆ */ };
+    // ✅ ดึง Firebase config จาก Environment Variables
+    const firebaseConfig = {
+      apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "YOUR_API_KEY",
+      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "YOUR_AUTH_DOMAIN",
+      databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "YOUR_DATABASE_URL",
+      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "YOUR_PROJECT_ID",
+      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "YOUR_STORAGE_BUCKET",
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "YOUR_MESSAGING_ID",
+      appId: import.meta.env.VITE_FIREBASE_APP_ID || "YOUR_APP_ID",
+      measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "YOUR_MEASUREMENT_ID"
+    };
+    
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database().ref('lottery');
     let data = [];
+    let pieChartInstance = null; // ✅ เก็บ reference ของ chart
 
-    db.on('value', snap => {
-      data = []; snap.forEach(c => data.push(c.val()));
-      data.sort((a,b) => b.date - a.date);
-      renderResults();
-      updateStats();
-    });
+    db.on('value', 
+      snap => {
+        data = []; 
+        snap.forEach(c => data.push(c.val()));
+        data.sort((a,b) => b.date - a.date);
+        renderResults();
+        updateStats();
+      },
+      err => {
+        console.error('❌ Firebase Error:', err);
+        document.getElementById('results').innerHTML = '<p class="col-span-full text-center text-red-600 font-bold">❌ ไม่สามารถเชื่อมต่อ Firebase ตรวจสอบ Config</p>';
+      }
+    );
 
     function renderResults() {
       const container = document.getElementById('results');
-      container.innerHTML = data.slice(0,12).map((x, i) => `
-        <div class="card p-6 ${i===0?'ring-4 ring-pink-400':''} transform hover:scale-105 transition">
-          <div class="flex justify-between items-start mb-3">
-            <span class="text-sm text-gray-500">${x.type==='TH'?'รัฐบาลไทย':x.type}</span>
-            <span class="text-lg font-bold text-purple-600">${x.date.slice(6)}/${x.date.slice(4,6)}/${x.date.slice(0,4)}</span>
+      const filterType = document.getElementById('filterType').value;
+      
+      // 🔍 Filter ข้อมูล
+      let filteredData = data;
+      if (filterType !== 'all') {
+        filteredData = data.filter(x => x.type === filterType);
+      }
+
+      if (filteredData.length === 0) {
+        container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-8 text-sm sm:text-base">📭 ไม่มีข้อมูล</p>';
+        return;
+      }
+      
+      container.innerHTML = filteredData.slice(0,12).map((x, i) => `
+        <div class="card p-4 sm:p-6 ${i===0?'ring-4 ring-pink-400':''} transform hover:scale-105 transition">
+          <div class="flex justify-between items-start mb-3 gap-2">
+            <span class="text-xs sm:text-sm text-gray-500">${x.type==='TH'?'รัฐบาลไทย':x.type}</span>
+            <span class="text-sm sm:text-lg font-bold text-purple-600">${x.date.slice(6)}/${x.date.slice(4,6)}/${x.date.slice(0,4)}</span>
           </div>
-          <div class="text-4xl font-black text-center my-4">${x.full6}</div>
-          <div class="grid grid-cols-2 gap-4 text-center">
+          <div class="text-3xl sm:text-4xl font-black text-center my-3 sm:my-4">${x.full6}</div>
+          <div class="grid grid-cols-3 gap-2 sm:gap-4 text-center text-xs sm:text-base">
             <div>
-              <div class="text-sm text-gray-600">3 ตัวล่าง</div>
-              <div class="text-2xl font-bold text-green-600">${x.lower3||'-'}</div>
+              <div class="text-gray-600 text-xs">3 ตัวล่าง (1)</div>
+              <div class="text-lg sm:text-2xl font-bold text-green-600">${x.lower3a||'-'}</div>
             </div>
             <div>
-              <div class="text-sm text-gray-600">2 ตัวล่าง</div>
-              <div class="text-3xl font-bold text-pink-600">${x.bottom}</div>
+              <div class="text-gray-600 text-xs">3 ตัวล่าง (2)</div>
+              <div class="text-lg sm:text-2xl font-bold text-green-600">${x.lower3b||'-'}</div>
+            </div>
+            <div>
+              <div class="text-gray-600 text-xs">2 ตัวล่าง</div>
+              <div class="text-xl sm:text-3xl font-bold text-pink-600">${x.bottom}</div>
             </div>
           </div>
         </div>
@@ -156,32 +193,144 @@
     }
 
     function updateStats() {
-      // ตัวอย่าง Pie Chart
+      // ✅ Destroy chart เก่าก่อน
+      if (pieChartInstance) {
+        pieChartInstance.destroy();
+      }
+      
+      // 📊 คำนวณ 2 ตัวล่าง ที่ออกบ่อยที่สุด
+      const bottom2Freq = {};
+      data.forEach(x => {
+        bottom2Freq[x.bottom] = (bottom2Freq[x.bottom] || 0) + 1;
+      });
+      const top5Bottom = Object.entries(bottom2Freq)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0,5)
+        .map(([num]) => num);
+
+      // 📊 อัปเดต stats card
+      const statsCard = document.querySelector('.card:nth-child(1) .flex');
+      if (top5Bottom.length > 0) {
+        statsCard.innerHTML = top5Bottom.map((num, i) => {
+          const colors = ['bg-orange-100 text-orange-800', 'bg-pink-100 text-pink-800', 'bg-yellow-100 text-yellow-800', 'bg-purple-100 text-purple-800', 'bg-blue-100 text-blue-800'];
+          return `<span class="${colors[i]||'bg-gray-100 text-gray-800'} px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">${num}</span>`;
+        }).join('');
+      }
+      
+      // 📊 Pie Chart: คำนวณบน/ล่างจาก 6 ตัวแรก
+      const topBottomStats = { top: 0, bottom: 0 };
+      data.forEach(x => {
+        const first3 = parseInt(x.full6.substring(0,3));
+        const last3 = parseInt(x.full6.substring(3,6));
+        if (first3 > last3) topBottomStats.top++;
+        else topBottomStats.bottom++;
+      });
+      
       const ctx = document.getElementById('pieChart').getContext('2d');
-      new Chart(ctx, {
+      pieChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          datasets: [{ data: [60, 40], backgroundColor: ['#f472b6', '#3b82f6'] }],
+          datasets: [{ 
+            data: [topBottomStats.top, topBottomStats.bottom], 
+            backgroundColor: ['#f472b6', '#3b82f6'] 
+          }],
           labels: ['เลขบน', 'เลขล่าง']
         },
         options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
       });
+
+      // 🔮 คำนวณ AI Ensemble Stats
+      calculateAIStats();
+    }
+
+    function calculateAIStats() {
+      if (data.length === 0) return;
+
+      // 📊 หา 2 ตัวล่างที่ออกบ่อยที่สุด
+      const bottom2Count = {};
+      data.forEach(x => {
+        bottom2Count[x.bottom] = (bottom2Count[x.bottom] || 0) + 1;
+      });
+      const topBottom2 = Object.entries(bottom2Count)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0,5)
+        .map(([num]) => num)
+        .join(', ');
+
+      // 📊 หา 3 ตัวล่างที่ออกบ่อยที่สุด
+      const bottom3Count = {};
+      data.forEach(x => {
+        if (x.lower3a && x.lower3a !== '---') bottom3Count[x.lower3a] = (bottom3Count[x.lower3a] || 0) + 1;
+        if (x.lower3b && x.lower3b !== '---') bottom3Count[x.lower3b] = (bottom3Count[x.lower3b] || 0) + 1;
+      });
+      const topBottom3 = Object.entries(bottom3Count)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0,3)
+        .map(([num]) => num)
+        .join(', ');
+
+      // 📊 อัปเดต AI Stats card
+      const aiCard = document.querySelector('.card:nth-child(3) .space-y-2');
+      if (aiCard) {
+        aiCard.innerHTML = `
+          <div>รางวัลล่าสุด: <strong>${data[0].full6}</strong></div>
+          <div>3 ตัวล่าง: <strong>${topBottom3 || '-'}</strong></div>
+          <div>2 ตัวล่าง: <strong>${topBottom2 || '-'}</strong></div>
+          <div class="text-xs sm:text-sm opacity-90 mt-3">📊 คำนวณจาก ${data.length} งวด</div>
+        `;
+      }
     }
 
     document.getElementById('form').onsubmit = e => {
       e.preventDefault();
-      db.push({
+      const newData = {
         date: document.getElementById('date').value.replace(/-/g,''),
         type: document.getElementById('type').value,
         full6: document.getElementById('full6').value.padStart(6,'0'),
-        lower3: document.getElementById('lower3').value || '---',
+        lower3a: document.getElementById('lower3a').value || '---',
+        lower3b: document.getElementById('lower3b').value || '---',
         bottom: document.getElementById('bottom').value.padStart(2,'0')
+      };
+      db.push(newData, err => {
+        if (err) {
+          alert('❌ บันทึกไม่สำเร็จ: ' + err.message);
+        } else {
+          alert('✅ บันทึกสำเร็จ!');
+          document.getElementById('form').reset();
+          closeModal();
+        }
       });
-      closeModal();
     };
 
     function openModal() { document.getElementById('modal').classList.remove('hidden'); document.getElementById('date').valueAsDate = new Date(); }
     function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+    function saveSimulator() {
+      const simData = {
+        date: document.getElementById('simDate').value.replace(/-/g,''),
+        type: document.getElementById('simType').value,
+        full6: document.getElementById('simFull6').value.padStart(6,'0'),
+        lower3a: document.getElementById('simLower3a').value || '---',
+        lower3b: document.getElementById('simLower3b').value || '---',
+        bottom: document.getElementById('simBottom').value.padStart(2,'0')
+      };
+      if (!simData.date || !simData.full6 || !simData.bottom) {
+        alert('⚠️ กรุณากรอกข้อมูลให้ครบ (วันที่, รางวัลที่ 1, 2 ตัวล่าง)');
+        return;
+      }
+      db.push(simData, err => {
+        if (err) {
+          alert('❌ บันทึกไม่สำเร็จ: ' + err.message);
+        } else {
+          alert('✅ บันทึกสำเร็จ!');
+          document.getElementById('simDate').value = '';
+          document.getElementById('simFull6').value = '';
+          document.getElementById('simLower3a').value = '';
+          document.getElementById('simLower3b').value = '';
+          document.getElementById('simBottom').value = '';
+        }
+      });
+    }
   </script>
 </body>
 </html>
