@@ -1,336 +1,463 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>หวยแม่น.Ai - AI วิเคราะห์เลขเด็ดแม่นยำที่สุด</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LottoGenius AI — Lucky Aura Edition</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Firebase + Chart.js -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
-    body { font-family: 'Prompt', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-    .card { background: white; border-radius: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-    .btn-primary { @apply bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition; }
+    :root {
+      --bg: #0f0e17;
+      --card: rgba(255,255,255,0.08);
+      --accent1: #a855f7;
+      --accent2: #7c3aed;
+      --gold: #facc15;
+      --text: #f1f1f1;
+      --muted: #b5b5b5;
+      --glow: rgba(168,85,247,0.55);
+    }
+
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: radial-gradient(circle at top, #1d1836 0%, #0f0e17 70%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      backdrop-filter: blur(8px);
+      padding: 16px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      color: white;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 0 14px var(--glow);
+      transition: 0.15s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 22px var(--glow);
+    }
+
+    .badge-sm {
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
+    }
+
+    .icon-box {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+      box-shadow: inset 0 -5px 12px rgba(0,0,0,0.3);
+    }
+
+    select, input {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+    }
+
+    .muted { color: var(--muted); font-size: 13px; }
   </style>
 </head>
-<body class="text-gray-800">
+<body>
 
-  <!-- Navbar -->
-  <nav class="bg-gradient-to-r from-purple-700 to-pink-700 text-white shadow-2xl sticky top-0 z-50">
-    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <div class="text-4xl">🎯 หวยแม่น.ai</div>
-        <span class="text-sm opacity-90">ระบบทำนายเลขด้วย AI ขั้นสูง</span>
+<!-- HEADER -->
+<header class="sticky top-0 z-50 backdrop-blur-md bg-black/40 border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="icon-box" style="background:linear-gradient(135deg,var(--accent1),var(--accent2)); box-shadow:0 0 20px var(--glow);">
+        <svg width="22" height="22" fill="white" viewBox="0 0 24 24">
+          <path d="M12 2l2.6 5.8L21 9l-4.5 3.3L17.2 20 12 16.9 6.8 20l.7-7.7L3 9l6.4-1.2L12 2z"/>
+        </svg>
       </div>
-      <button onclick="openModal()" class="btn-primary text-lg">+ เพิ่มผลหวย</button>
-    </div>
-  </nav>
-
-  <div class="container mx-auto px-6 py-8 max-w-7xl">
-
-    <!-- Stats Row -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-      <div class="card p-6 text-center">
-        <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-purple-600 mb-4">🔥 เลขท้าย 2 ตัว ที่ออกบ่อยสุด</h3>
-        <div class="flex justify-center gap-3 flex-wrap">
-          <span class="bg-orange-100 text-orange-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">89</span>
-          <span class="bg-pink-100 text-pink-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">12</span>
-          <span class="bg-yellow-100 text-yellow-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">23</span>
-          <span class="bg-purple-100 text-purple-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">44</span>
-          <span class="bg-blue-100 text-blue-800 px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">64</span>
-        </div>
-      </div>
-      
-      <div class="card p-6 text-center">
-        <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-purple-600 mb-4">⚖️ สถิติบน vs ล่าง</h3>
-        <canvas id="pieChart" height="150"></canvas>
-      </div>
-
-      <div class="card p-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-        <h3 class="text-lg sm:text-xl md:text-2xl font-bold mb-4">🔮 แนวทาง AI</h3>
-        <div class="space-y-2 text-sm sm:text-base md:text-lg">
-          <div>รางวัลที่ 1 : <strong>386998</strong></div>
-          <div>3 ตัวบน: <strong>445, 129, 578</strong></div>
-          <div>3 ตัวล่าง: <strong>733, 662, 197</strong></div>
-          <div>2 ตัวล่าง: <strong>75, 83, 39</strong></div>
-          <div class="text-xs sm:text-sm opacity-90 mt-3">Frequency + Delta</div>
-        </div>
+      <div>
+        <div class="text-xl font-extrabold" style="color:var(--gold)">LottoGenius AI</div>
+        <div class="muted text-xs">Lucky Aura · Ensemble Model</div>
       </div>
     </div>
 
-    <!-- 📜 ผลรางวัลย้อนหลัง -->
-    <div class="card p-6 sm:p-8 mb-8">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h2 class="text-2xl sm:text-3xl font-black text-purple-700">ผลรางวัลย้อนหลัง</h2>
-        <select id="filterType" onchange="renderResults()" class="border-2 border-purple-300 rounded-xl px-4 py-2 text-sm sm:text-base">
-          <option value="all">ทั้งหมด</option>
-          <option value="TH">🇹🇭 ไทย</option>
-          <option value="LAO">🇱🇦 ลาว</option>
-          <option value="HANOI">🇻🇳 ฮานอย</option>
-        </select>
-      </div>
-
-      <div id="results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-        <!-- จะถูกเติมด้วย JavaScript -->
-      </div>
-    </div>
-
-    <!-- Simulator -->
-    <div class="card p-6 sm:p-8 bg-gradient-to-r from-indigo-50 to-purple-50">
-      <h2 class="text-2xl sm:text-3xl font-black text-purple-700 mb-4 sm:mb-6">📝 เพิ่มผลรางวัลใหม่</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 items-end">
-        <select id="simType" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-sm sm:text-base">
-           <option value="TH">🇹🇭 ไทย</option>
-           <option value="LAO">🇱🇦 ลาว</option>
-           <option value="HANOI">🇻🇳 ฮานอย</option>
-        </select>
-        <input type="date" id="simDate" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-sm sm:text-base">
-        <input type="text" id="simFull6" maxlength="6" placeholder="รางวัลที่ 1" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-lg sm:text-xl">
-        <input type="text" id="simLower3a" maxlength="3" placeholder="3 ตัวล่าง (1)" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-lg sm:text-xl text-green-600">
-        <input type="text" id="simLower3b" maxlength="3" placeholder="3 ตัวล่าง (2)" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-lg sm:text-xl text-green-600">
-        <input type="text" id="simBottom" maxlength="2" placeholder="2 ตัวล่าง" class="p-3 sm:p-4 border-2 border-purple-300 rounded-xl text-center font-bold text-lg sm:text-xl text-pink-600">
-        <button type="button" onclick="saveSimulator()" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 sm:py-4 rounded-xl text-sm sm:text-base">บันทึก</button>
-      </div>
-    </div>
+    <button class="btn-primary flex items-center gap-2" onclick="openModal()">
+      <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M12 5v14m7-7H5" stroke="white" stroke-width="2"/></svg>
+      เพิ่มผลหวย
+    </button>
   </div>
+</header>
 
-  <!-- Modal เพิ่มผลหวย -->
-  <div id="modal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center z-50 p-4">
-    <div class="card p-6 sm:p-8 lg:p-10 w-full max-w-sm sm:max-w-md lg:max-w-lg relative">
-      <button onclick="closeModal()" class="absolute top-3 sm:top-4 lg:top-6 right-4 sm:right-6 lg:right-8 text-3xl sm:text-4xl lg:text-5xl text-gray-400 hover:text-gray-700">&times;</button>
-      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-6 sm:mb-8 lg:mb-10 text-purple-700">เพิ่มผลหวยงวดล่าสุด</h2>
-      <form id="form" class="space-y-4 sm:space-y-5 lg:space-y-6">
-        <input type="date" id="date" required class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-sm sm:text-base lg:text-lg">
-        <select id="type" required class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-sm sm:text-base lg:text-lg">
-          <option value="TH">หวยรัฐบาลไทย</option>
-          <option value="LAO">หวยลาวพัฒนา</option>
-          <option value="HANOI">หวยฮานอย</option>
-        </select>
-        <input type="text" id="full6" maxlength="6" placeholder="รางวัลที่ 1" required class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-center text-2xl sm:text-3xl lg:text-4xl font-bold">
-        <input type="text" id="lower3a" maxlength="3" placeholder="3 ตัวล่าง (1)" class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-center text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">
-        <input type="text" id="lower3b" maxlength="3" placeholder="3 ตัวล่าง (2)" class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-center text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600">
-        <input type="text" id="bottom" maxlength="2" placeholder="เลขท้าย 2 ตัว" required class="w-full p-3 sm:p-4 lg:p-5 border-2 sm:border-3 lg:border-4 border-purple-200 rounded-lg sm:rounded-xl lg:rounded-2xl text-center text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-600">
-        <div class="flex gap-3 sm:gap-4 lg:gap-5">
-          <button type="submit" class="flex-1 btn-primary py-3 sm:py-4 lg:py-5 text-sm sm:text-base lg:text-xl">บันทึก!</button>
-          <button type="button" onclick="closeModal()" class="flex-1 bg-gray-300 text-gray-700 font-bold py-3 sm:py-4 lg:py-5 rounded-full text-sm sm:text-base lg:text-xl hover:bg-gray-400">ยกเลิก</button>
-        </div>
-      </form>
+<!-- MAIN -->
+<main class="max-w-7xl mx-auto px-4 py-6">
+
+  <!-- TOP CARDS -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+    <!-- Frequent 2 Digit -->
+    <div class="card">
+      <h3 class="text-lg font-semibold mb-2">🔥 เลขท้าย 2 ตัว ที่ออกบ่อยสุด</h3>
+      <div id="freq2" class="flex flex-wrap gap-2 mt-2"></div>
     </div>
+
+    <!-- PIE -->
+    <div class="card">
+      <h3 class="text-lg font-semibold mb-2">⚖️ สัดส่วน เลขบน vs เลขล่าง</h3>
+      <canvas id="pieChart" height="150"></canvas>
+    </div>
+
+    <!-- AI -->
+    <div class="card" style="background:linear-gradient(135deg,#4c1d95,#7c3aed); box-shadow:0 0 22px rgba(124,58,237,0.6);">
+      <h3 class="text-lg font-semibold text-white">🔮 แนวทาง AI (Lucky Aura)</h3>
+
+      <div class="mt-3 space-y-2 text-white text-sm">
+        <div>รางวัลที่ 1: <span id="aiFull6" class="text-xl font-extrabold"></span></div>
+        <div>3 ตัวบน: <span id="aiTop3"></span></div>
+        <div>3 ตัวล่าง: <span id="aiLower3"></span></div>
+        <div>2 ตัวล่าง: <span id="aiBottom2"></span></div>
+      </div>
+
+      <div class="mt-2 text-xs text-white/70">Frequency + Delta + Recency Boost</div>
+    </div>
+  </section>
+
+  <!-- RESULT LIST -->
+  <section class="card mb-6">
+    <div class="flex justify-between mb-4">
+      <div>
+        <h2 class="text-xl font-bold text-white">ผลรางวัลย้อนหลัง</h2>
+        <div class="muted text-xs">แสดงล่าสุด 12 งวด</div>
+      </div>
+      <select id="filterType" onchange="renderResults()" class="p-2 rounded">
+        <option value="all">ทั้งหมด</option>
+        <option value="TH">ไทย</option>
+        <option value="LAO">ลาว</option>
+        <option value="HANOI">ฮานอย</option>
+      </select>
+    </div>
+
+    <div id="results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
+  </section>
+
+  <!-- SIMULATOR -->
+  <section class="card p-4">
+    <h3 class="font-semibold mb-3">🧪 เพิ่มผลรางวัลใหม่ (Simulator)</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
+      <select id="simType" class="p-2 rounded">
+        <option value="TH">ไทย</option>
+        <option value="LAO">ลาว</option>
+        <option value="HANOI">ฮานอย</option>
+      </select>
+
+      <input type="date" id="simDate" class="p-2 rounded"/>
+
+      <input type="text" id="simFull6" maxlength="6" placeholder="รางวัลที่ 1" class="p-2 rounded text-center"/>
+
+      <input type="text" id="simLower3a" maxlength="3" placeholder="3 ล่าง 1" class="p-2 rounded text-center"/>
+      <input type="text" id="simLower3b" maxlength="3" placeholder="3 ล่าง 2" class="p-2 rounded text-center"/>
+
+      <input type="text" id="simBottom" maxlength="2" placeholder="2 ล่าง" class="p-2 rounded text-center"/>
+
+      <button onclick="saveSimulator()" class="btn-primary">บันทึก</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL -->
+<div id="modal" class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+  <div class="card max-w-lg w-full relative">
+
+    <button onclick="closeModal()" class="absolute top-3 right-4 text-2xl text-white/70">×</button>
+
+    <h3 class="text-xl font-bold mb-4">เพิ่มผลหวยงวดล่าสุด</h3>
+
+    <form id="form" class="space-y-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <input type="date" id="date" required class="p-2 rounded"/>
+        <select id="type" required class="p-2 rounded">
+          <option value="TH">ไทย</option>
+          <option value="LAO">ลาว</option>
+          <option value="HANOI">ฮานอย</option>
+        </select>
+      </div>
+
+      <input id="full6" maxlength="6" placeholder="รางวัลที่ 1 (6 หลัก)" class="p-2 rounded w-full text-center" required />
+
+      <input id="lower3a" maxlength="3" placeholder="3 ล่าง (1)" class="p-2 rounded w-full text-center" />
+      <input id="lower3b" maxlength="3" placeholder="3 ล่าง (2)" class="p-2 rounded w-full text-center" />
+
+      <input id="bottom" maxlength="2" placeholder="2 ล่าง" class="p-2 rounded w-full text-center" required />
+
+      <button class="btn-primary w-full">บันทึก</button>
+    </form>
+
   </div>
+</div>
 
-  <script>
-    // ✅ ดึง Firebase config จาก Environment Variables
-    const firebaseConfig = {
-      apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "YOUR_API_KEY",
-      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "YOUR_AUTH_DOMAIN",
-      databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "YOUR_DATABASE_URL",
-      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "YOUR_PROJECT_ID",
-      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "YOUR_STORAGE_BUCKET",
-      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "YOUR_MESSAGING_ID",
-      appId: import.meta.env.VITE_FIREBASE_APP_ID || "YOUR_APP_ID",
-      measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "YOUR_MEASUREMENT_ID"
-    };
-    
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database().ref('lottery');
-    let data = [];
-    let pieChartInstance = null; // ✅ เก็บ reference ของ chart
+<!-- SCRIPT -->
+<script>
 
-    db.on('value', 
-      snap => {
-        data = []; 
-        snap.forEach(c => data.push(c.val()));
-        data.sort((a,b) => b.date - a.date);
-        renderResults();
-        updateStats();
-      },
-      err => {
-        console.error('❌ Firebase Error:', err);
-        document.getElementById('results').innerHTML = '<p class="col-span-full text-center text-red-600 font-bold">❌ ไม่สามารถเชื่อมต่อ Firebase ตรวจสอบ Config</p>';
-      }
-    );
+// ===== Firebase Config =====
+const firebaseConfig = {
+  apiKey:"AIzaSyCkS6eu3SuB5McIkS_7J8srMIhXQ7osc-E",
+  authDomain:"huaymaen-lottoai.firebaseapp.com",
+  databaseURL:"https://huaymaen-lottoai-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"huaymaen-lottoai",
+  storageBucket:"huaymaen-lottoai.firebasestorage.app",
+  messagingSenderId:"326340239586",
+  appId:"1:326340239586:web:563d03ca906ca4ba327ebb",
+  measurementId:"G-MF97ZM968E"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database().ref('lottery');
 
-    function renderResults() {
-      const container = document.getElementById('results');
-      const filterType = document.getElementById('filterType').value;
-      
-      // 🔍 Filter ข้อมูล
-      let filteredData = data;
-      if (filterType !== 'all') {
-        filteredData = data.filter(x => x.type === filterType);
-      }
+let data = [];
+let pieChart = null;
 
-      if (filteredData.length === 0) {
-        container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-8 text-sm sm:text-base">📭 ไม่มีข้อมูล</p>';
-        return;
-      }
-      
-      container.innerHTML = filteredData.slice(0,12).map((x, i) => `
-        <div class="card p-4 sm:p-6 ${i===0?'ring-4 ring-pink-400':''} transform hover:scale-105 transition">
-          <div class="flex justify-between items-start mb-3 gap-2">
-            <span class="text-xs sm:text-sm text-gray-500">${x.type==='TH'?'รัฐบาลไทย':x.type}</span>
-            <span class="text-sm sm:text-lg font-bold text-purple-600">${x.date.slice(6)}/${x.date.slice(4,6)}/${x.date.slice(0,4)}</span>
-          </div>
-          <div class="text-3xl sm:text-4xl font-black text-center my-3 sm:my-4">${x.full6}</div>
-          <div class="grid grid-cols-3 gap-2 sm:gap-4 text-center text-xs sm:text-base">
-            <div>
-              <div class="text-gray-600 text-xs">3 ตัวล่าง (1)</div>
-              <div class="text-lg sm:text-2xl font-bold text-green-600">${x.lower3a||'-'}</div>
-            </div>
-            <div>
-              <div class="text-gray-600 text-xs">3 ตัวล่าง (2)</div>
-              <div class="text-lg sm:text-2xl font-bold text-green-600">${x.lower3b||'-'}</div>
-            </div>
-            <div>
-              <div class="text-gray-600 text-xs">2 ตัวล่าง</div>
-              <div class="text-xl sm:text-3xl font-bold text-pink-600">${x.bottom}</div>
-            </div>
-          </div>
+const pad = (s, n=2) => String(s||'').padStart(n,'0');
+
+function formatDate(s){
+  if(!s) return '-';
+  return `${s.slice(6)}/${s.slice(4,6)}/${s.slice(0,4)}`;
+}
+
+/* ==========================
+   FETCH + RENDER RESULTS
+   ========================== */
+
+function renderResults(){
+  const container = document.getElementById('results');
+  const filter = document.getElementById('filterType').value;
+  let arr = data.slice();
+
+  if(filter !== "all"){
+    arr = arr.filter(x => x.type === filter);
+  }
+
+  arr = arr.slice(0,12);
+
+  if(arr.length === 0){
+    container.innerHTML = "<div class='p-4 muted text-center col-span-full'>ไม่มีข้อมูล</div>";
+    return;
+  }
+
+  container.innerHTML = arr.map(x=>{
+    const top3 = x.full6 ? x.full6.slice(-3) : "-";
+    const lower = [x.lower3a, x.lower3b].filter(Boolean).join(", ");
+
+    return `
+      <div class="card p-3">
+        <div class="flex justify-between mb-2">
+          <div class="muted text-xs">${x.type}</div>
+          <div class="text-xs text-yellow-300">${formatDate(x.date)}</div>
         </div>
-      `).join('');
+
+        <div class="text-2xl font-extrabold mb-2">${x.full6}</div>
+
+        <div class="grid grid-cols-3 gap-1 text-sm">
+          <div>3 บน<br><span class="text-green-300 font-bold">${top3}</span></div>
+          <div>3 ล่าง<br><span class="text-green-300 font-bold">${lower||"-"}</span></div>
+          <div>2 ล่าง<br><span class="text-pink-300 font-bold">${x.bottom||"-"}</span></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ==========================
+   CHART + STATS
+   ========================== */
+
+function updateStats(){
+  if(pieChart) pieChart.destroy();
+
+  let top=0, bottom=0;
+  data.forEach(x=>{
+    if(!x.full6) return;
+    const first3 = Number(x.full6.slice(0,3));
+    const last3  = Number(x.full6.slice(3));
+    if(first3 > last3) top++; else bottom++;
+  });
+
+  const ctx = document.getElementById("pieChart").getContext("2d");
+  pieChart = new Chart(ctx,{
+    type:"doughnut",
+    data:{
+      labels:["เลขบน","เลขล่าง"],
+      datasets:[{
+        data:[top,bottom],
+        backgroundColor:["#c084fc","#4f46e5"]
+      }]
+    },
+    options:{
+      plugins:{ legend:{ labels:{ color:"white" }, position:"bottom" } }
     }
+  });
 
-    function updateStats() {
-      // ✅ Destroy chart เก่าก่อน
-      if (pieChartInstance) {
-        pieChartInstance.destroy();
-      }
-      
-      // 📊 คำนวณ 2 ตัวล่าง ที่ออกบ่อยที่สุด
-      const bottom2Freq = {};
-      data.forEach(x => {
-        bottom2Freq[x.bottom] = (bottom2Freq[x.bottom] || 0) + 1;
-      });
-      const top5Bottom = Object.entries(bottom2Freq)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0,5)
-        .map(([num]) => num);
+  // freq 2-digit
+  const freq = {};
+  data.forEach(x=>{
+    if(!x.bottom) return;
+    const num = pad(x.bottom,2);
+    freq[num] = (freq[num]||0)+1;
+  });
 
-      // 📊 อัปเดต stats card
-      const statsCard = document.querySelector('.card:nth-child(1) .flex');
-      if (top5Bottom.length > 0) {
-        statsCard.innerHTML = top5Bottom.map((num, i) => {
-          const colors = ['bg-orange-100 text-orange-800', 'bg-pink-100 text-pink-800', 'bg-yellow-100 text-yellow-800', 'bg-purple-100 text-purple-800', 'bg-blue-100 text-blue-800'];
-          return `<span class="${colors[i]||'bg-gray-100 text-gray-800'} px-3 sm:px-5 py-2 sm:py-3 rounded-full text-lg sm:text-xl font-bold">${num}</span>`;
-        }).join('');
-      }
-      
-      // 📊 Pie Chart: คำนวณบน/ล่างจาก 6 ตัวแรก
-      const topBottomStats = { top: 0, bottom: 0 };
-      data.forEach(x => {
-        const first3 = parseInt(x.full6.substring(0,3));
-        const last3 = parseInt(x.full6.substring(3,6));
-        if (first3 > last3) topBottomStats.top++;
-        else topBottomStats.bottom++;
-      });
-      
-      const ctx = document.getElementById('pieChart').getContext('2d');
-      pieChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          datasets: [{ 
-            data: [topBottomStats.top, topBottomStats.bottom], 
-            backgroundColor: ['#f472b6', '#3b82f6'] 
-          }],
-          labels: ['เลขบน', 'เลขล่าง']
-        },
-        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-      });
+  const top5 = Object.entries(freq)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,5);
 
-      // 🔮 คำนวณ AI Ensemble Stats
-      calculateAIStats();
-    }
+  const el = document.getElementById("freq2");
+  el.innerHTML = top5.map(([n])=>`<div class="badge-sm">${n}</div>`).join("");
 
-    function calculateAIStats() {
-      if (data.length === 0) return;
+  runAI();
+}
 
-      // 📊 หา 2 ตัวล่างที่ออกบ่อยที่สุด
-      const bottom2Count = {};
-      data.forEach(x => {
-        bottom2Count[x.bottom] = (bottom2Count[x.bottom] || 0) + 1;
-      });
-      const topBottom2 = Object.entries(bottom2Count)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0,5)
-        .map(([num]) => num)
-        .join(', ');
+/* ==========================
+      AI ENSEMBLE
+   ========================== */
 
-      // 📊 หา 3 ตัวล่างที่ออกบ่อยที่สุด
-      const bottom3Count = {};
-      data.forEach(x => {
-        if (x.lower3a && x.lower3a !== '---') bottom3Count[x.lower3a] = (bottom3Count[x.lower3a] || 0) + 1;
-        if (x.lower3b && x.lower3b !== '---') bottom3Count[x.lower3b] = (bottom3Count[x.lower3b] || 0) + 1;
-      });
-      const topBottom3 = Object.entries(bottom3Count)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0,3)
-        .map(([num]) => num)
-        .join(', ');
+function runAI(){
+  const fullArr = data.map(d => d.full6).filter(Boolean);
+  const lowerArr = [];
+  data.forEach(d=>{
+    if(d.lower3a) lowerArr.push(d.lower3a);
+    if(d.lower3b) lowerArr.push(d.lower3b);
+  });
+  const bottomArr = data.map(d=>d.bottom).filter(Boolean);
 
-      // 📊 อัปเดต AI Stats card
-      const aiCard = document.querySelector('.card:nth-child(3) .space-y-2');
-      if (aiCard) {
-        aiCard.innerHTML = `
-          <div>รางวัลล่าสุด: <strong>${data[0].full6}</strong></div>
-          <div>3 ตัวล่าง: <strong>${topBottom3 || '-'}</strong></div>
-          <div>2 ตัวล่าง: <strong>${topBottom2 || '-'}</strong></div>
-          <div class="text-xs sm:text-sm opacity-90 mt-3">📊 คำนวณจาก ${data.length} งวด</div>
-        `;
-      }
-    }
+  const freq = arr => {
+    const m={};
+    arr.forEach((v,i)=>{
+      m[v]=(m[v]||0)+Math.exp(-0.04*i);
+    });
+    return m;
+  };
 
-    document.getElementById('form').onsubmit = e => {
-      e.preventDefault();
-      const newData = {
-        date: document.getElementById('date').value.replace(/-/g,''),
-        type: document.getElementById('type').value,
-        full6: document.getElementById('full6').value.padStart(6,'0'),
-        lower3a: document.getElementById('lower3a').value || '---',
-        lower3b: document.getElementById('lower3b').value || '---',
-        bottom: document.getElementById('bottom').value.padStart(2,'0')
-      };
-      db.push(newData, err => {
-        if (err) {
-          alert('❌ บันทึกไม่สำเร็จ: ' + err.message);
-        } else {
-          alert('✅ บันทึกสำเร็จ!');
-          document.getElementById('form').reset();
-          closeModal();
-        }
-      });
-    };
+  const top5 = map=>{
+    return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([v])=>v);
+  };
 
-    function openModal() { document.getElementById('modal').classList.remove('hidden'); document.getElementById('date').valueAsDate = new Date(); }
-    function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+  // generate 6-digit prediction
+  const f3 = fullArr.map(x=>x.slice(0,3));
+  const l3 = fullArr.map(x=>x.slice(3));
 
-    function saveSimulator() {
-      const simData = {
-        date: document.getElementById('simDate').value.replace(/-/g,''),
-        type: document.getElementById('simType').value,
-        full6: document.getElementById('simFull6').value.padStart(6,'0'),
-        lower3a: document.getElementById('simLower3a').value || '---',
-        lower3b: document.getElementById('simLower3b').value || '---',
-        bottom: document.getElementById('simBottom').value.padStart(2,'0')
-      };
-      if (!simData.date || !simData.full6 || !simData.bottom) {
-        alert('⚠️ กรุณากรอกข้อมูลให้ครบ (วันที่, รางวัลที่ 1, 2 ตัวล่าง)');
-        return;
-      }
-      db.push(simData, err => {
-        if (err) {
-          alert('❌ บันทึกไม่สำเร็จ: ' + err.message);
-        } else {
-          alert('✅ บันทึกสำเร็จ!');
-          document.getElementById('simDate').value = '';
-          document.getElementById('simFull6').value = '';
-          document.getElementById('simLower3a').value = '';
-          document.getElementById('simLower3b').value = '';
-          document.getElementById('simBottom').value = '';
-        }
-      });
-    }
-  </script>
+  const mapF = freq(f3);
+  const mapL = freq(l3);
+
+  const bestF = top5(mapF)[0] || "000";
+  const bestL = top5(mapL)[0] || "000";
+  const fullPredict = bestF + bestL;
+
+  // bottom 2
+  const bottomPredict = top5(freq(bottomArr));
+
+  // lower 3
+  const lowerPredict = top5(freq(lowerArr));
+
+  // write DOM
+  document.getElementById("aiFull6").textContent = fullPredict;
+  document.getElementById("aiTop3").textContent  = fullPredict.slice(-3);
+  document.getElementById("aiLower3").textContent = lowerPredict.join(", ");
+  document.getElementById("aiBottom2").textContent = bottomPredict.join(", ");
+}
+
+/* ==========================
+   SAVE
+   ========================== */
+
+function saveSimulator(){
+  const simDate = document.getElementById("simDate").value;
+  const simType = document.getElementById("simType").value;
+  const simFull6 = pad(document.getElementById("simFull6").value,6);
+  const simLower3a = document.getElementById("simLower3a").value || "---";
+  const simLower3b = document.getElementById("simLower3b").value || "---";
+  const simBottom  = pad(document.getElementById("simBottom").value,2);
+
+  if(!simDate || !simFull6 || !simBottom){
+    alert("กรุณากรอกข้อมูลให้ครบ");
+    return;
+  }
+
+  db.push({
+    date:simDate.replace(/-/g,""),
+    type:simType,
+    full6:simFull6,
+    lower3a:simLower3a,
+    lower3b:simLower3b,
+    bottom:simBottom
+  });
+  alert("บันทึกสำเร็จ!");
+}
+
+function openModal(){ document.getElementById("modal").classList.remove("hidden"); }
+function closeModal(){ document.getElementById("modal").classList.add("hidden"); }
+
+/* FORM SUBMIT */
+document.getElementById("form").addEventListener("submit",e=>{
+  e.preventDefault();
+
+  const d = document.getElementById("date").value;
+  const t = document.getElementById("type").value;
+  const f = pad(document.getElementById("full6").value,6);
+  const l1 = document.getElementById("lower3a").value || "---";
+  const l2 = document.getElementById("lower3b").value || "---";
+  const b = pad(document.getElementById("bottom").value,2);
+
+  if(!d || !f || !b){
+    alert("กรุณากรอกข้อมูลให้ครบ");
+    return;
+  }
+
+  db.push({
+    date:d.replace(/-/g,""),
+    type:t,
+    full6:f,
+    lower3a:l1,
+    lower3b:l2,
+    bottom:b
+  });
+
+  alert("บันทึกสำเร็จ!");
+  closeModal();
+});
+
+/* Firebase Listen */
+db.on("value", snap=>{
+  data = [];
+  snap.forEach(c=>{
+    data.push(c.val());
+  });
+  data.sort((a,b)=> (b.date||0)-(a.date||0));
+
+  renderResults();
+  updateStats();
+});
+
+</script>
+
 </body>
 </html>
