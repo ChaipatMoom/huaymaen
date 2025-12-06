@@ -424,22 +424,58 @@ body.bg-moon {
           </div>
         </div>
 
-        <div>
-          <label class="text-sm">รางวัลที่ 1</label>
-          <input id="firstPrizeInput" type="text" maxlength="6" class="input-dd w-full" placeholder="เช่น 461252" />
-        </div>
+        <div id="addSectionTH">
+          <div>
+            <label class="text-sm">รางวัลที่ 1</label>
+            <input id="firstPrizeInput" type="text" maxlength="6" class="input-dd w-full" placeholder="เช่น 461252" />
+          </div>
 
-        <div>
-          <label class="text-sm">3 ตัวล่าง</label>
-          <div class="grid grid-cols-2 gap-2">
-            <input id="threeBottomAInput" type="text" maxlength="3" class="input-dd w-full text-center" placeholder="เช่น 137" />
-            <input id="threeBottomBInput" type="text" maxlength="3" class="input-dd w-full text-center" placeholder="เช่น 995" />
+          <div>
+            <label class="text-sm">3 ตัวล่าง</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input id="threeBottomAInput" type="text" maxlength="3" class="input-dd w-full text-center" placeholder="เช่น 137" />
+              <input id="threeBottomBInput" type="text" maxlength="3" class="input-dd w-full text-center" placeholder="เช่น 995" />
+            </div>
+          </div>
+
+          <div>
+            <label class="text-sm">2 ตัวล่าง</label>
+            <input id="twoBottomInput" type="text" maxlength="2" class="input-dd w-full" placeholder="เช่น 22" />
           </div>
         </div>
 
-        <div>
-          <label class="text-sm">2 ตัวล่าง</label>
-          <input id="twoBottomInput" type="text" maxlength="2" class="input-dd w-full" placeholder="เช่น 22" />
+        <div id="addSectionLAO" class="hidden">
+          <div>
+            <label class="text-sm">เลข 6 ตัว</label>
+            <input id="laoSixInput" type="text" maxlength="6" class="input-dd w-full" placeholder="เช่น 559145" />
+          </div>
+          <div>
+            <label class="text-sm">เลข 4 ตัว</label>
+            <input id="laoLast4Input" type="text" maxlength="4" class="input-dd w-full" placeholder="เช่น 1234" />
+          </div>
+          <div>
+            <label class="text-sm">เลข 3 ตัว</label>
+            <input id="laoLast3Input" type="text" maxlength="3" class="input-dd w-full" placeholder="เช่น 234" />
+          </div>
+          <div>
+            <label class="text-sm">ลาวพัฒนา (2 หลัก x5)</label>
+            <input id="laoLast2MultiInput" type="text" class="input-dd w-full" placeholder="เช่น 12,34,56,78,90" />
+          </div>
+        </div>
+
+        <div id="addSectionHANOI" class="hidden">
+          <div>
+            <label class="text-sm">รางวัลที่ 1 (5 หลัก)</label>
+            <input id="hnFirst5Input" type="text" maxlength="5" class="input-dd w-full" placeholder="เช่น 12345" />
+          </div>
+          <div>
+            <label class="text-sm">รางวัลที่ 6 (3 หลัก x3)</label>
+            <input id="hnPrize6Input" type="text" class="input-dd w-full" placeholder="เช่น 123,456,789" />
+          </div>
+          <div>
+            <label class="text-sm">รางวัลที่ 7 (2 หลัก x4)</label>
+            <input id="hnPrize7Input" type="text" class="input-dd w-full" placeholder="เช่น 12,34,56,78" />
+          </div>
         </div>
       </div>
 
@@ -470,25 +506,17 @@ body.bg-moon {
       <button onclick="openAddModal()" class="btn-primary sm:hidden px-3">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 5v14m7-7H5" stroke="white" stroke-width="2"/></svg>
       </button>
-
-      <!-- dropdown trigger -->
-      <div class="relative">
-        <button onclick="toggleDD()" class="dd-btn flex items-center gap-1 sm:gap-2">
-          <span id="ddFlag">🇹🇭</span>
-          <span id="ddLabel" class="hidden sm:inline">ไทย</span>
-        </button>
-
-        <div id="ddMenu" class="dd-menu hidden">
-          <div class="dd-item" onclick="setDD('ไทย','🇹🇭')">🇹🇭 ไทย</div>
-          <div class="dd-item" onclick="setDD('ลาว','🇱🇦')">🇱🇦 ลาว</div>
-          <div class="dd-item" onclick="setDD('ฮานอย','🇻🇳')">🇻🇳 ฮานอย</div>
-        </div>
+      <div class="flex items-center gap-2">
+        <button id="headerTypeTHBtn" class="dd-btn px-3" onclick="chooseType('TH')">🇹🇭 ไทย</button>
+        <button id="headerTypeLAOBtn" class="dd-btn px-3" onclick="chooseType('LAO')">🇱🇦 ลาว</button>
+        <button id="headerTypeHANOIBtn" class="dd-btn px-3" onclick="chooseType('HANOI')">🇻🇳 ฮานอย</button>
       </div>
+      
     </div>
   </div>
 
   <!-- AI AURA CARD -->
-  <div class="max-w-6xl mx-auto px-4 mt-3 sm:mt-4">
+  <div id="auraSection" class="max-w-6xl mx-auto px-4 mt-3 sm:mt-4">
     <div class="aura-card p-4 sm:p-6 mt-3 sm:mt-4">
       <h2 class="text-base sm:text-lg font-bold text-white mb-3">🌟 แนวทาง AI ให้โชค</h2>
 
@@ -496,37 +524,52 @@ body.bg-moon {
         <div class="ai-spinner"></div>
         <p class="text-white/60 mt-2 text-xs sm:text-sm">AI กำลังประมวลผลค้นหาเลขเด็ด!...</p>
       </div>
+      <div id="aiWarning" class="hidden text-center my-4 sm:my-6">
+        <p id="aiWarningText" class="text-white/80 text-sm sm:text-base"></p>
+      </div>
 
       <div id="aiResult" class="ai-result-grid grid gap-3 sm:gap-4 text-white">
         <div class="card">
-          <div class="text-xs sm:text-sm muted">🏆 รางวัลที่ 1 </div>
+          <div id="aiCard1Title" class="text-xs sm:text-sm muted">🏆 รางวัลที่ 1</div>
           <div id="aiSix" class="text-xl sm:text-2xl font-bold mt-1">—</div>
         </div>
 
         <div class="card">
-          <div class="text-xs sm:text-sm muted">🎯 เลขท้าย 3 ตัวรางวัลที่ 1</div>
+          <div id="aiCard2Title" class="text-xs sm:text-sm muted">🎯 เลขท้าย 3 ตัวรางวัลที่ 1</div>
           <div id="aiTop3" class="text-lg sm:text-xl font-semibold mt-1">—</div>
         </div>
 
         <div class="card">
-          <div class="text-xs sm:text-sm muted">🎲 เลขท้าย 3 ตัว</div>
+          <div id="aiCard3Title" class="text-xs sm:text-sm muted">🎲 เลขท้าย 3 ตัว</div>
           <div id="aiBottom3" class="text-lg sm:text-xl font-semibold mt-1">—</div>
         </div>
 
         <div class="card">
-    <div class="text-xs sm:text-sm muted">✨ เลขท้าย 2 ตัว</div>
-    <div id="aiTwo" class="text-lg sm:text-xl font-semibold mt-1">—</div>
-    <div class="text-xs muted mt-2">Confidence: <span id="aiScore">—%</span></div>
-  </div>
-</div>
+          <div id="aiCard4Title" class="text-xs sm:text-sm muted">✨ เลขท้าย 2 ตัว</div>
+          <div id="aiTwo" class="text-lg sm:text-xl font-semibold mt-1">—</div>
+          <div class="text-xs muted mt-2">Confidence: <span id="aiScore">—%</span></div>
+        </div>
+      </div>
 <button onclick="runAIwithAura()" class="btn-primary w-full mt-4">ค้นหาเลขเด็ดงวดถัดไป</button>
+    </div>
+  </div>
+
+  <!-- Landing Selection -->
+  <div id="landing" class="max-w-6xl mx-auto px-4 mt-6 sm:mt-8 hidden">
+    <div class="card p-6 text-center">
+      <h2 class="text-lg font-bold text-white mb-4">เลือกประเภทหวยเพื่อเริ่มต้น</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button onclick="chooseType('TH')" class="btn-primary w-full py-3">🇹🇭 ไทย</button>
+        <button onclick="chooseType('LAO')" class="btn-primary w-full py-3">🇱🇦 ลาว</button>
+        <button onclick="chooseType('HANOI')" class="btn-primary w-full py-3">🇻🇳 ฮานอย</button>
+      </div>
     </div>
   </div>
 
   <!-- ===============================
        MAIN CONTENT
        =============================== -->
-  <main class="max-w-6xl mx-auto px-4 mt-6 sm:mt-8">
+  <main id="appMain" class="max-w-6xl mx-auto px-4 mt-6 sm:mt-8">
 
     <!-- STAT CARDS -->
     <section class="stat-grid grid gap-4 sm:gap-6 mb-8 sm:mb-10">
@@ -539,8 +582,8 @@ body.bg-moon {
 
       <!-- Pie Chart -->
       <div class="card">
-        <h3 class="text-lg font-semibold mb-3">⚖️ สัดส่วน เลขท้ายรางวัลที่ 1 vs เลขท้าย 3 ตัว</h3>
-        <canvas id="pieChart" height="160"></canvas>
+        <h3 class="text-lg font-semibold mb-3">🔥 เลขท้าย 3 ตัว ที่ออกบ่อยสุด</h3>
+        <div id="freq3" class="flex flex-wrap gap-2 mt-2"></div>
       </div>
 
       <!-- AI Aura Summary -->
@@ -548,12 +591,12 @@ body.bg-moon {
         <h3 class="text-lg font-semibold mb-3">🔮 สรุป AI ให้หวยแม่นๆ</h3>
 
         <div class="text-sm text-white/70 space-y-1">
-          <div>รางวัลที่ 1:  
+          <div id="aiSmallTitle1">รางวัลที่ 1:  
             <span id="aiSix_small" class="text-gold font-bold"></span>
           </div>
-          <div>เลขท้าย 3 ตัวรางวัลที่ 1: <span id="aiTop3_small" class="text-gold"></span></div>
-          <div>เลขท้าย 3 ตัว: <span id="aiBottom3_small" class="text-gold"></span></div>
-          <div>เลขท้าย 2 ตัว: <span id="aiTwo_small" class="text-gold"></span></div>
+          <div id="aiSmallTitle2">เลขท้าย 3 ตัวรางวัลที่ 1: <span id="aiTop3_small" class="text-gold"></span></div>
+          <div id="aiSmallTitle3">เลขท้าย 3 ตัว: <span id="aiBottom3_small" class="text-gold"></span></div>
+          <div id="aiSmallTitle4">เลขท้าย 2 ตัว: <span id="aiTwo_small" class="text-gold"></span></div>
           <div>ความมั่นใจ: <span id="aiScore_small" class="text-gold font-bold"></span></div>
         </div>
       </div>
@@ -677,6 +720,15 @@ function setAddType(t){
   });
   const el = document.getElementById(ids[t]);
   if(el){ el.classList.remove('dd-btn'); el.classList.add('btn-primary'); }
+  const secTH = document.getElementById('addSectionTH');
+  const secLAO = document.getElementById('addSectionLAO');
+  const secHN = document.getElementById('addSectionHANOI');
+  if(secTH) secTH.classList.add('hidden');
+  if(secLAO) secLAO.classList.add('hidden');
+  if(secHN) secHN.classList.add('hidden');
+  if(t==='TH' && secTH) secTH.classList.remove('hidden');
+  if(t==='LAO' && secLAO) secLAO.classList.remove('hidden');
+  if(t==='HANOI' && secHN) secHN.classList.remove('hidden');
 }
 function typeToLabel(t){
   if(t==='TH') return 'ไทย';
@@ -696,19 +748,93 @@ function openOnboard(){ document.getElementById('onboard').classList.remove('hid
 function closeOnboard(){
   document.getElementById('onboard').classList.add('hidden');
   localStorage.setItem('lg_onboard_done','yes');
+  showLanding();
 }
 (function maybeOpenOnboard(){
   setTimeout(openOnboard, 700);
 })();
 
+function showLanding(){
+  const ld = document.getElementById('landing'); if(ld) ld.classList.remove('hidden');
+  const aura = document.getElementById('auraSection'); if(aura) aura.classList.add('hidden');
+  const main = document.getElementById('appMain'); if(main) main.classList.add('hidden');
+}
+function hideLanding(){
+  const ld = document.getElementById('landing'); if(ld) ld.classList.add('hidden');
+  const aura = document.getElementById('auraSection'); if(aura) aura.classList.remove('hidden');
+  const main = document.getElementById('appMain'); if(main) main.classList.remove('hidden');
+}
+function updateAIViewForType(t){
+  const t1 = document.getElementById('aiCard1Title');
+  const t2 = document.getElementById('aiCard2Title');
+  const t3 = document.getElementById('aiCard3Title');
+  const t4 = document.getElementById('aiCard4Title');
+  const s1 = document.getElementById('aiSmallTitle1');
+  const s2 = document.getElementById('aiSmallTitle2');
+  const s3 = document.getElementById('aiSmallTitle3');
+  const s4 = document.getElementById('aiSmallTitle4');
+  if(t==='TH'){
+    if(t1) t1.innerText = '🏆 รางวัลที่ 1';
+    if(t2) t2.innerText = '🎯 เลขท้าย 3 ตัวรางวัลที่ 1';
+    if(t3) t3.innerText = '🎲 เลขท้าย 3 ตัว';
+    if(t4) t4.innerText = '✨ เลขท้าย 2 ตัว';
+    if(s1) s1.firstChild.nodeValue = 'รางวัลที่ 1:  ';
+    if(s2) s2.firstChild.nodeValue = 'เลขท้าย 3 ตัวรางวัลที่ 1: ';
+    if(s3) s3.firstChild.nodeValue = 'เลขท้าย 3 ตัว: ';
+    if(s4) s4.firstChild.nodeValue = 'เลขท้าย 2 ตัว: ';
+  } else if(t==='LAO'){
+    if(t1) t1.innerText = '🏆 เลข 6 ตัว (x1)';
+    if(t2) t2.innerText = '🔢 เลข 4 ตัว (x2)';
+    if(t3) t3.innerText = '🎯 เลข 3 ตัว (x3)';
+    if(t4) t4.innerText = '🧩 ลาวพัฒนา (2 หลัก x5)';
+    if(s1) s1.firstChild.nodeValue = 'เลข 6 ตัว:  ';
+    if(s2) s2.firstChild.nodeValue = 'เลข 4 ตัว (x2): ';
+    if(s3) s3.firstChild.nodeValue = 'เลข 3 ตัว (x3): ';
+    if(s4) s4.firstChild.nodeValue = 'ลาวพัฒนา (2 หลัก x5): ';
+  } else if(t==='HANOI'){
+    if(t1) t1.innerText = '🏆 รางวัลที่ 1 (5 หลัก)';
+    if(t2) t2.innerText = '🎯 รางวัลที่ 6 (3 หลัก x3)';
+    if(t3) t3.innerText = '🎲 รางวัลที่ 7 (2 หลัก x4)';
+    if(t4) t4.innerText = '✨ ความมั่นใจ';
+    if(s1) s1.firstChild.nodeValue = 'รางวัลที่ 1 (5 หลัก):  ';
+    if(s2) s2.firstChild.nodeValue = 'รางวัลที่ 6 (3 หลัก x3): ';
+    if(s3) s3.firstChild.nodeValue = 'รางวัลที่ 7 (2 หลัก x4): ';
+    if(s4) s4.firstChild.nodeValue = 'เลขท้าย 2 ตัว: ';
+  }
+}
+function chooseType(t){
+  hideLanding();
+  const flag = (t==='TH')?'🇹🇭':(t==='LAO')?'🇱🇦':'🇻🇳';
+  const label = typeToLabel(t);
+  setHistoryFilter(t, flag, label);
+  setAddType(t);
+  updateAIViewForType(t);
+  setHeaderTypeActive(t);
+  renderHistory();
+  updateStats();
+}
+function setHeaderTypeActive(t){
+  const ids = {TH:'headerTypeTHBtn', LAO:'headerTypeLAOBtn', HANOI:'headerTypeHANOIBtn'};
+  ['headerTypeTHBtn','headerTypeLAOBtn','headerTypeHANOIBtn'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){ el.classList.remove('btn-primary'); el.classList.add('dd-btn'); }
+  });
+  const el = document.getElementById(ids[t]);
+  if(el){ el.classList.remove('dd-btn'); el.classList.add('btn-primary'); }
+}
+
 /* ============================
    ADD RESULT MODAL controls
    ============================ */
-function openAddModal(){ document.getElementById('addModal').classList.remove('hidden'); }
+function openAddModal(){
+  document.getElementById('addModal').classList.remove('hidden');
+  const t = (historyFilter && historyFilter!=='all') ? historyFilter : addType;
+  setAddType(t);
+}
 function closeAddModal(){
   document.getElementById('addModal').classList.add('hidden');
   // clear fields
-  const ids = ['dateInput','firstPrizeInput','threeBottomAInput','threeBottomBInput','twoBottomInput'];
+  const ids = ['dateInput','firstPrizeInput','threeBottomAInput','threeBottomBInput','twoBottomInput','laoSixInput','laoLast4Input','laoLast3Input','laoLast2MultiInput','hnFirst5Input','hnPrize6Input','hnPrize7Input'];
   ids.forEach(id=>{ const el = document.getElementById(id); if(el) el.value=''; });
   setAddType('TH');
 }
@@ -765,57 +891,67 @@ function hasDuplicate(dateStr, typeStr){
    - trigger AI run + effects
    ============================ */
 async function saveResult(){
-  const dateVal = document.getElementById('dateInput').value;
-  const full6 = (document.getElementById('firstPrizeInput').value||'').trim();
-  const threeA = (document.getElementById('threeBottomAInput').value||'').trim();
-  const threeB = (document.getElementById('threeBottomBInput').value||'').trim();
-  const two = (document.getElementById('twoBottomInput').value||'').trim();
-
-  if(!dateVal || !full6 || !two){
-    alert('กรุณากรอกข้อมูลให้ครบ (วันที่, รางวัลที่1 , เลขท้าย 3 ตัว , เลขท้าย 2 ตัว)');
-    return;
-  }
-  if(!isDigits(full6) || full6.length !== 6){
-    alert('รางวัลที่ 1 ต้องเป็นตัวเลข 6 หลัก');
-    return;
-  }
-  if(!isDigits(threeA) || threeA.length !== 3){
-    alert('เลขท้าย 3 ตัวรางวัลที่ 1 ต้องเป็นตัวเลข 3 หลัก');
-    return;
-  }
-  if(!isDigits(two) || two.length !== 2){
-    alert('เลขท้าย 2 ตัว ต้องเป็นตัวเลข 2 หลัก');
-    return;
-  }
-
+  const dateVal = (document.getElementById('dateInput').value||'').trim();
+  if(!dateVal){ alert('กรุณากรอกวันที่'); return; }
   const dnum = dateVal.replace(/-/g,'');
   const type = addType;
 
-  // allow duplicate save if same date+type exists
-
-  // 3 ล่างสองช่อง (optional, sanitize to 3 digits or '---')
-  let bottomA='---', bottomB='---';
-  if(isDigits(threeA) && threeA.length===3) bottomA = threeA;
-  if(isDigits(threeB) && threeB.length===3) bottomB = threeB;
-
-  const payload = {
-    date: dnum,
-    type: type,
-    full6: pad(full6,6),
-    lower3a: bottomA,
-    lower3b: bottomB,
-    bottom: pad(two,2)
-  };
-
+  let payload = { date: dnum, type };
   const typeLabel = typeToLabel(type);
-  const confirmMsg = `ยืนยันการบันทึกข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateVal}\nรางวัลที่ 1: ${full6}\nเลขท้าย 3 ตัว: ${bottomA}${bottomB!=='---'?`, ${bottomB}`:''}\nเลขท้าย 2 ตัว: ${two}`;
+  let confirmMsg = '';
+
+  if(type==='TH'){
+    const full6 = (document.getElementById('firstPrizeInput').value||'').trim();
+    const threeA = (document.getElementById('threeBottomAInput').value||'').trim();
+    const threeB = (document.getElementById('threeBottomBInput').value||'').trim();
+    const two = (document.getElementById('twoBottomInput').value||'').trim();
+    if(!full6 || !two){ alert('กรุณากรอก รางวัลที่1 และ เลขท้าย 2 ตัว'); return; }
+    if(!isDigits(full6) || full6.length!==6){ alert('รางวัลที่ 1 ต้องเป็นตัวเลข 6 หลัก'); return; }
+    if(!isDigits(two) || two.length!==2){ alert('เลขท้าย 2 ตัว ต้องเป็นตัวเลข 2 หลัก'); return; }
+    let bottomA='---', bottomB='---';
+    if(isDigits(threeA) && threeA.length===3) bottomA = threeA;
+    if(isDigits(threeB) && threeB.length===3) bottomB = threeB;
+    payload = { ...payload, full6: pad(full6,6), lower3a: bottomA, lower3b: bottomB, bottom: pad(two,2) };
+    confirmMsg = `ยืนยันการบันทึกข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateVal}\nรางวัลที่ 1: ${full6}\nเลขท้าย 3 ตัว: ${bottomA}${bottomB!=='---'?`, ${bottomB}`:''}\nเลขท้าย 2 ตัว: ${two}`;
+  } else if(type==='LAO'){
+    const lao6 = (document.getElementById('laoSixInput')?.value||'').trim();
+    const lao4 = (document.getElementById('laoLast4Input')?.value||'').trim();
+    const lao3 = (document.getElementById('laoLast3Input')?.value||'').trim();
+    const lao2m = (document.getElementById('laoLast2MultiInput')?.value||'').trim();
+    const clean6 = s=> (isDigits(s)&&s.length===6 ? s : '');
+    const clean4 = s=> (isDigits(s)&&s.length===4 ? s : '');
+    const clean3 = s=> (isDigits(s)&&s.length===3 ? s : '');
+    const list2 = s=> (s? s.split(',').map(x=>x.trim()).filter(x=>isDigits(x)&&x.length===2) : []);
+    const s6 = clean6(lao6);
+    const l4 = clean4(lao4);
+    let l3 = clean3(lao3);
+    if(!l3 && l4) l3 = l4.slice(1);
+    const l2m = list2(lao2m);
+    if(!s6 && !l4 && !l3 && l2m.length===0){ alert('กรุณากรอกอย่างน้อย 1 ช่องสำหรับหวยลาว'); return; }
+    const devDisplay = l2m.join(', ');
+    payload = { ...payload, six: s6, last4: l4, last3: l3, last2_multi: devDisplay, bottom: devDisplay };
+    confirmMsg = `ยืนยันการบันทึกข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateVal}\nเลข 6 ตัว: ${s6||'—'}\nเลข 4 ตัว: ${l4||'—'}\nเลข 3 ตัว: ${l3|| (l4?l4.slice(1):'—')}\nลาวพัฒนา (2 หลัก x5): ${devDisplay||'—'}`;
+  } else if(type==='HANOI'){
+    const hn5 = (document.getElementById('hnFirst5Input')?.value||'').trim();
+    const hn6 = (document.getElementById('hnPrize6Input')?.value||'').trim();
+    const hn7 = (document.getElementById('hnPrize7Input')?.value||'').trim();
+    const clean5 = s=> (isDigits(s)&&s.length===5 ? s : '');
+    const list3 = s=> (s? s.split(',').map(x=>x.trim()).filter(x=>isDigits(x)&&x.length===3) : []);
+    const list2 = s=> (s? s.split(',').map(x=>x.trim()).filter(x=>isDigits(x)&&x.length===2) : []);
+    const f5 = clean5(hn5);
+    const p6 = list3(hn6);
+    const p7 = list2(hn7);
+    if(!f5 && p6.length===0 && p7.length===0){ alert('กรุณากรอกอย่างน้อย 1 ช่องสำหรับหวยฮานอย'); return; }
+    const bottomDisplay = p7.length>0 ? p7.join(', ') : '';
+    payload = { ...payload, first5: f5, prize6_list: p6.join(', '), prize7_list: p7.join(', '), bottom: bottomDisplay };
+    confirmMsg = `ยืนยันการบันทึกข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateVal}\nรางวัลที่ 1 (5 หลัก): ${f5||'—'}\nรางวัลที่ 6 (3 หลัก x3): ${p6.join(', ')||'—'}\nรางวัลที่ 7 (2 หลัก x4): ${p7.join(', ')||'—'}`;
+  }
+
   const ok = confirm(confirmMsg);
   if(!ok) return;
-
   try {
     const key = `${type}_${dnum}`;
     await db.child(key).set(payload);
-    // close + clear
     closeAddModal();
   } catch (error) {
     alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + error.message + '. กรุณาตรวจสอบการเชื่อมต่อหรือสิทธิ์ใน Firebase.');
@@ -842,17 +978,25 @@ function renderHistory(){
 
   const is3 = s => /^\d{3}$/.test(String(s||''));
   const is2 = s => /^\d{2}$/.test(String(s||''));
+  const is4 = s => /^\d{4}$/.test(String(s||''));
+  const is5 = s => /^\d{5}$/.test(String(s||''));
+
   const byKey = new Map();
   arr.forEach(r => {
     const key = r.date + '|' + r.type;
-    const score = (is3(r.lower3a)?1:0) + (is3(r.lower3b)?1:0) + (is2(r.bottom)?1:0) + (String(r.full6||'').length===6?1:0);
+    const score = (String(r.full6||'').length===6?1:0)
+      + (is3(r.lower3a)?1:0) + (is3(r.lower3b)?1:0) + (is2(r.bottom)?1:0)
+      + (is4(r.last4)?1:0) + (is3(r.last3)?1:0) + (is2(r.last2)?1:0)
+      + ((String(r.last2_multi||'').split(',').map(x=>x.trim()).filter(x=>is2(x)).length>0)?1:0)
+      + (is5(r.first5)?1:0)
+      + ((String(r.prize6_list||'').split(',').map(x=>x.trim()).filter(x=>is3(x)).length>=3)?1:0)
+      + ((String(r.prize7_list||'').split(',').map(x=>x.trim()).filter(x=>is2(x)).length>=4)?1:0);
     const exist = byKey.get(key);
     if(!exist || score > exist._score) { r._score = score; byKey.set(key, r); }
   });
   arr = Array.from(byKey.values());
   arr.sort((a,b)=> b.date.localeCompare(a.date));
 
-  // Apply type filter (only if not 'all')
   if(historyFilter && historyFilter !== 'all'){
     arr = arr.filter(r => {
       const t = String(r.type).trim();
@@ -870,25 +1014,16 @@ function renderHistory(){
     return;
   }
 
-  box.innerHTML = arr.map(r => {
-    const top3 = (r.full6 && r.full6.length === 6) ? r.full6.slice(-3) : '-';
-    const lower = [r.lower3a, r.lower3b].filter(x => x && x !== '---').join(", ") || '-';
-    const flag = (r.type === 'TH' || r.type==='ไทย') ? '🇹🇭'
-      : (r.type==='LAO' || r.type==='ลาว') ? '🇱🇦'
-      : (r.type==='HANOI' || r.type==='ฮานอย') ? '🇻🇳' : '🌐';
-    const typeLabel = r.type === 'TH' ? 'ไทย' : r.type === 'LAO' ? 'ลาว' : r.type === 'HANOI' ? 'ฮานอย' : r.type;
-
-    const dateFmt = `${r.date.slice(6,8)}/${r.date.slice(4,6)}/${r.date.slice(0,4)}`;
-
+  const cardTH = (r, flag, typeLabel, dateFmt) => {
+    const top3 = (r.full6 && r.full6.length === 6) ? r.full6.slice(-3) : '—';
+    const lower = [r.lower3a, r.lower3b].filter(x => x && x !== '---').join(", ") || '—';
     return `
       <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-full6="${r.full6||''}" data-lower3a="${r.lower3a||''}" data-lower3b="${r.lower3b||''}" data-bottom="${r.bottom||''}">
         <div class="flex justify-between items-start mb-3">
           <div class="text-sm text-white/70">${flag} <span class="font-semibold ml-1">${typeLabel}</span></div>
           <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
         </div>
-
-        <div class="text-2xl font-extrabold mb-2">🏆 ${r.full6}</div>
-
+        <div class="text-2xl font-extrabold mb-2">🏆 ${r.full6||'—'}</div>
         <div class="grid grid-cols-3 gap-2 text-sm">
           <div class="text-center">
             <div class="text-xs text-white/60">เลขท้ายรางวัลที่ 1</div>
@@ -900,11 +1035,76 @@ function renderHistory(){
           </div>
           <div class="text-center">
             <div class="text-xs text-white/60">เลขท้าย 2 ตัว</div>
-            <div class="font-bold text-pink-300">${r.bottom}</div>
+            <div class="font-bold text-pink-300">${r.bottom||'—'}</div>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
+  };
+
+  const cardLAO = (r, flag, typeLabel, dateFmt) => {
+    const l2m = String(r.last2_multi||'').split(',').map(x=>x.trim()).filter(Boolean).join(', ');
+    const last3Show = r.last3 || (r.last4?String(r.last4).slice(1):'—');
+    return `
+      <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-six="${r.six||''}" data-last4="${r.last4||''}" data-last3="${r.last3||''}" data-last2multi="${r.last2_multi||''}">
+        <div class="flex justify-between items-start mb-3">
+          <div class="text-sm text-white/70">${flag} <span class="font-semibold ml-1">${typeLabel}</span></div>
+          <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
+        </div>
+        <div class="text-2xl font-extrabold mb-2">🏆 ${r.six||r.last4||'—'}</div>
+        <div class="grid grid-cols-3 gap-2 text-sm">
+          <div class="text-center">
+            <div class="text-xs text-white/60">เลข 4 ตัว</div>
+            <div class="font-bold text-green-300">${r.last4||'—'}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-xs text-white/60">เลข 3 ตัว</div>
+            <div class="font-bold text-green-300">${last3Show}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-xs text-white/60">ลาวพัฒนา (2 หลัก x5)</div>
+            <div class="font-bold text-pink-300">${l2m||'—'}</div>
+          </div>
+        </div>
+      </div>`;
+  };
+
+  const cardHN = (r, flag, typeLabel, dateFmt) => {
+    const p6 = String(r.prize6_list||'').split(',').map(x=>x.trim()).filter(Boolean).join(', ');
+    const p7 = String(r.prize7_list||'').split(',').map(x=>x.trim()).filter(Boolean).join(', ');
+    return `
+      <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-first5="${r.first5||''}" data-prize6="${r.prize6_list||''}" data-prize7="${r.prize7_list||''}">
+        <div class="flex justify-between items-start mb-3">
+          <div class="text-sm text-white/70">${flag} <span class="font-semibold ml-1">${typeLabel}</span></div>
+          <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
+        </div>
+        <div class="text-2xl font-extrabold mb-2">🏆 ${r.first5||'—'}</div>
+        <div class="grid grid-cols-3 gap-2 text-sm">
+          <div class="text-center">
+            <div class="text-xs text-white/60">รางวัลที่ 6 (3 หลัก x3)</div>
+            <div class="font-bold text-green-300">${p6||'—'}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-xs text-white/60">รางวัลที่ 7 (2 หลัก x4)</div>
+            <div class="font-bold text-green-300">${p7||'—'}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-xs text-white/60">เลขท้าย 2 ตัว</div>
+            <div class="font-bold text-pink-300">${r.bottom||'—'}</div>
+          </div>
+        </div>
+      </div>`;
+  };
+
+  box.innerHTML = arr.map(r => {
+    const flag = (r.type === 'TH' || r.type==='ไทย') ? '🇹🇭'
+      : (r.type==='LAO' || r.type==='ลาว') ? '🇱🇦'
+      : (r.type==='HANOI' || r.type==='ฮานอย') ? '🇻🇳' : '🌐';
+    const typeLabel = r.type === 'TH' ? 'ไทย' : r.type === 'LAO' ? 'ลาว' : r.type === 'HANOI' ? 'ฮานอย' : r.type;
+    const dateFmt = `${r.date.slice(6,8)}/${r.date.slice(4,6)}/${r.date.slice(0,4)}`;
+    const t = String(r.type).trim();
+    if(t==='LAO' || t==='ลาว') return cardLAO(r, flag, typeLabel, dateFmt);
+    if(t==='HANOI' || t==='ฮานอย') return cardHN(r, flag, typeLabel, dateFmt);
+    return cardTH(r, flag, typeLabel, dateFmt);
   }).join('');
 }
 
@@ -912,54 +1112,56 @@ function renderHistory(){
    Update stats: pie chart + freq2
    ============================ */
 function updateStats(){
-  // pie: count where first3 > last3 as top else bottom
-  let topCount = 0, bottomCount = 0;
-  allData.forEach(r=>{
-    if(!r.full6 || r.full6.length < 6) return;
-    const f = Number(r.full6.slice(0,3));
-    const l = Number(r.full6.slice(3));
-    if(f>l) topCount++; else bottomCount++;
+  const arr = allData.filter(r=>{
+    if(historyFilter==='all' || !historyFilter) return true;
+    const t = String(r.type).trim();
+    if(historyFilter==='TH') return t==='TH' || t==='ไทย';
+    if(historyFilter==='LAO') return t==='LAO' || t==='ลาว';
+    if(historyFilter==='HANOI') return t==='HANOI' || t==='ฮานอย';
+    return true;
   });
 
-  const ctx = document.getElementById('pieChart')?.getContext('2d');
-  if(ctx){
-    if(pieChart) pieChart.destroy();
-    pieChart = new Chart(ctx, {
-      type:'doughnut',
-      data:{
-        labels:['เลขท้ายรางวัลที่ 1','เลขท้าย 3 ตัว'],
-        datasets:[{ data:[topCount, bottomCount], backgroundColor:['#c084fc','#4f46e5'] }]
-      },
-      options:{
-        plugins:{
-          legend:{
-            labels:{
-              color:'white',
-              font:{ family:'Prompt', size:13, weight:'600' }
-            },
-            position:'bottom'
-          },
-          tooltip:{
-            titleColor:'white',
-            bodyColor:'white',
-            titleFont:{ family:'Prompt', weight:'600' },
-            bodyFont:{ family:'Prompt' }
-          }
-        }
-      }
-    });
-  }
-
-  // freq 2-digit
-  const freq = {};
-  allData.forEach(r=>{
-    if(!r.bottom) return;
-    const n = pad(r.bottom,2);
-    freq[n] = (freq[n]||0) + 1;
+  const freq2 = {};
+  arr.forEach(r=>{
+    const t = String(r.type||'').trim();
+    if(t==='TH' || t==='ไทย'){
+      const b = String(r.bottom||'').trim();
+      if(/^\d{2}$/.test(b)) freq2[b] = (freq2[b]||0) + 1;
+    } else if(t==='LAO' || t==='ลาว'){
+      const dev = String(r.last2_multi||'').split(',').map(x=>x.trim()).filter(x=>/^\d{2}$/.test(x));
+      dev.forEach(n=>{ freq2[n] = (freq2[n]||0) + 1; });
+    } else if(t==='HANOI' || t==='ฮานอย'){
+      const p7 = String(r.prize7_list||'').split(',').map(x=>x.trim()).filter(x=>/^\d{2}$/.test(x));
+      p7.forEach(n=>{ freq2[n] = (freq2[n]||0) + 1; });
+    } else {
+      const parts = String(r.bottom||'').split(',').map(x=>x.trim()).filter(x=>/^\d{2}$/.test(x));
+      parts.forEach(n=>{ freq2[n] = (freq2[n]||0) + 1; });
+    }
   });
-  const top10 = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([n])=>n);
-  const el = document.getElementById('freq2');
-  if(el) el.innerHTML = top10.map(n=>`<div class="text-white badge-sm">${n}</div>`).join(' ');
+  const top10_2 = Object.entries(freq2).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([n])=>n);
+  const el2 = document.getElementById('freq2');
+  if(el2) el2.innerHTML = top10_2.map(n=>`<div class="text-white badge-sm">${n}</div>`).join(' ');
+
+  const freq3 = {};
+  arr.forEach(r=>{
+    const t = String(r.type||'').trim();
+    if(t==='TH' || t==='ไทย'){
+      const a = String(r.lower3a||'').trim();
+      const b = String(r.lower3b||'').trim();
+      if(/^\d{3}$/.test(a)) freq3[a] = (freq3[a]||0) + 1;
+      if(/^\d{3}$/.test(b)) freq3[b] = (freq3[b]||0) + 1;
+    } else if(t==='LAO' || t==='ลาว'){
+      let l3 = String(r.last3||'').trim();
+      if(!/^\d{3}$/.test(l3) && /^\d{4}$/.test(String(r.last4||'').trim())) l3 = String(r.last4).slice(1);
+      if(/^\d{3}$/.test(l3)) freq3[l3] = (freq3[l3]||0) + 1;
+    } else if(t==='HANOI' || t==='ฮานอย'){
+      const p6 = String(r.prize6_list||'').split(',').map(x=>x.trim()).filter(x=>/^\d{3}$/.test(x));
+      p6.forEach(n=>{ freq3[n] = (freq3[n]||0) + 1; });
+    }
+  });
+  const top10_3 = Object.entries(freq3).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([n])=>n);
+  const el3 = document.getElementById('freq3');
+  if(el3) el3.innerHTML = top10_3.map(n=>`<div class="text-white badge-sm">${n}</div>`).join(' ');
 }
 
 /* ============================
@@ -969,8 +1171,10 @@ function updateStats(){
 function runAIwithAura(){
   const load = document.getElementById('aiLoading');
   const result = document.getElementById('aiResult');
+  const warn = document.getElementById('aiWarning');
   if(load) load.classList.remove('hidden');
   if(result) result.classList.add('hidden');
+  if(warn) warn.classList.add('hidden');
 
   // give the aura animation time
   setTimeout(()=>{
@@ -987,14 +1191,25 @@ function getTableData(){
   const cards = Array.from(document.querySelectorAll('#historyList .result-card'));
   const clean3 = s => { const v = String(s||'').trim(); return (/^\d{3}$/.test(v) ? v : ''); };
   const clean2 = s => { const v = String(s||'').trim(); return (/^\d{2}$/.test(v) ? v : ''); };
+  const clean4 = s => { const v = String(s||'').trim(); return (/^\d{4}$/.test(v) ? v : ''); };
+  const clean5 = s => { const v = String(s||'').trim(); return (/^\d{5}$/.test(v) ? v : ''); };
   const clean6 = s => { const v = String(s||'').trim(); return (/^\d{6}$/.test(v) ? v : ''); };
+  const toList = (s,len) => (String(s||'').split(',').map(x=>x.trim()).filter(x=>x.length===len && /^\d+$/.test(x)));
   return cards.map(card=>({
     date: card.getAttribute('data-date')||'',
     type: card.getAttribute('data-type')||'TH',
     full6: clean6(card.getAttribute('data-full6')),
     lower3a: clean3(card.getAttribute('data-lower3a')),
     lower3b: clean3(card.getAttribute('data-lower3b')),
-    bottom: clean2(card.getAttribute('data-bottom'))
+    bottom: clean2(card.getAttribute('data-bottom')),
+    six: clean6(card.getAttribute('data-six')),
+    last4: clean4(card.getAttribute('data-last4')),
+    last3: clean3(card.getAttribute('data-last3')),
+    last2: clean2(card.getAttribute('data-last2')),
+    last2multi: toList(card.getAttribute('data-last2multi'),2),
+    first5: clean5(card.getAttribute('data-first5')),
+    prize6list: toList(card.getAttribute('data-prize6'),3),
+    prize7list: toList(card.getAttribute('data-prize7'),2)
   }));
 }
 
@@ -1004,10 +1219,13 @@ function getTableData(){
 function Ai() {
   const tableData = getTableData();
   if(tableData.length === 0) {
-    return { prize1: '——', top3: ['—', '—', '—'], bottom3: ['—', '—', '—'], bottom2: ['—', '—', '—'], confidence: 0 };
+    const type = historyFilter;
+    const icon = type==='LAO' ? '🇱🇦⚠️' : type==='HANOI' ? '🇻🇳⚠️' : '🇹🇭⚠️';
+    const msg = `${icon} ผลรางวัลย้อนหลังไม่เพียงพอ กรุณาเพิ่มผลรางวัล เพื่อ Ai จะได้ประมวลผลเลขเด็ดๆให้ ครับ`;
+    return { insufficient: true, warning: msg, prize1: '——', top3: ['—', '—', '—'], bottom3: ['—', '—', '—'], bottom2: ['—', '—', '—'], confidence: 0 };
   }
 
-  // prepare arrays (most recent first from visible table)
+  const type = historyFilter;
   const arrFull = tableData.map(r=>r.full6).filter(Boolean);
   const f3Arr = arrFull.map(s=> s.slice(0,3));
   const l3Arr = arrFull.map(s=> s.slice(3));
@@ -1020,6 +1238,17 @@ function Ai() {
     if(is3(r.lower3b)) lowerArr.push(r.lower3b);
   });
   const bottomArr = tableData.map(r=>r.bottom).filter(v=>is2(v));
+  const lao6Arr = tableData.map(r=>r.six).filter(v=>/^\d{6}$/.test(String(v||'')));
+  const lao4Arr = tableData.map(r=>r.last4).filter(v=>/^\d{4}$/.test(String(v||'')));
+  const lao3Arr = [];
+  tableData.forEach(r=>{
+    if(is3(r.last3)) lao3Arr.push(r.last3);
+    if(/^\d{4}$/.test(String(r.last4||''))){ const x = String(r.last4).slice(1); if(is3(x)) lao3Arr.push(x); }
+  });
+  const lao2mArr = []; tableData.forEach(r=> (r.last2multi||[]).forEach(x=>{ if(is2(x)) lao2mArr.push(x); }));
+  const hn5Arr = tableData.map(r=>r.first5).filter(v=>/^\d{5}$/.test(String(v||'')));
+  const hn6Arr = []; tableData.forEach(r=> (r.prize6list||[]).forEach(x=>{ if(is3(x)) hn6Arr.push(x); }));
+  const hn7Arr = []; tableData.forEach(r=> (r.prize7list||[]).forEach(x=>{ if(is2(x)) hn7Arr.push(x); }));
 
   // weighted frequency function (decay by index)
   const weightedFreq = (arr, decay=0.045) => {
@@ -1080,45 +1309,88 @@ function Ai() {
   const combF = combine(mapF, deltaF);
   const combL = combine(mapL, deltaL);
 
-  let bestF = weightedPick(combF, 8) || '000';
-  let bestL = weightedPick(combL, 8) || '000';
-
-  // assemble 6-digit
-  let prize1 = (bestF + bestL);
-
-  if(Math.random() < 0.35){
-    const d = prize1.split('');
-    const pos = Math.floor(Math.random()*6);
-    d[pos] = String(Math.floor(Math.random()*10));
-    prize1 = d.join('');
-  }
-  if(Math.random() < 0.15){
-    const n = parseInt(prize1,10) || 0;
-    prize1 = String((n + 1 + Math.floor(Math.random()*97)) % 1000000).padStart(6,'0');
-  }
-  if(Math.random() < 0.02){
-    const n = parseInt(prize1,10) || 0;
-    prize1 = String((n + Math.floor(Math.random()*37)) % 1000000).padStart(6,'0');
-  }
-
-  // lower3 & bottom2 predictions
   const lowerMap = weightedFreq(lowerArr, 0.05);
   const bottomMap = weightedFreq(bottomArr, 0.06);
+
+  if(type==='LAO' || type==='ลาว'){
+    const noData = lao6Arr.length===0 && lao4Arr.length===0 && lao3Arr.length===0 && lao2mArr.length===0;
+    if(noData){
+      const msg = `🇱🇦⚠️ ผลรางวัลย้อนหลังไม่เพียงพอ กรุณาเพิ่มผลรางวัล เพื่อ Ai จะได้ประมวลผลเลขเด็ดๆให้ ครับ`;
+      return { insufficient: true, warning: msg, prize1: '——', top3: ['—','—'], bottom3: ['—','—','—'], bottom2: ['—','—','—','—','—'], confidence: 0 };
+    }
+    const lao6Map = weightedFreq(lao6Arr, 0.04);
+    const lao4Map = weightedFreq(lao4Arr, 0.04);
+    const lao3Map = weightedFreq(lao3Arr, 0.05);
+    const lao2mMap = weightedFreq(lao2mArr, 0.06);
+
+    let six1 = Object.keys(lao6Map).length ? weightedPick(lao6Map, 10) : '';
+    if(!six1){
+      const base3 = Object.keys(lao3Map).length ? Object.entries(lao3Map).sort((a,b)=>b[1]-a[1])[0][0] : '';
+      const rand3 = String(Math.floor(Math.random()*1000)).padStart(3,'0');
+      six1 = (base3+rand3) || '——';
+    }
+
+    const set4 = sampleUnique(lao4Map, 2, 10);
+    while(set4.length<2){
+      const fb4 = Object.entries(lao4Map).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
+      for(const x of fb4){ if(set4.length>=2) break; if(!set4.includes(x)) set4.push(x); }
+      if(set4.length<2) set4.push('—');
+    }
+
+    const set3 = sampleUnique(lao3Map, 3, 10);
+    while(set3.length<3){
+      const fb3 = Object.entries(lao3Map).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
+      for(const x of fb3){ if(set3.length>=3) break; if(!set3.includes(x)) set3.push(x); }
+      if(set3.length<3) set3.push('—');
+    }
+
+    const dev5 = sampleUnique(lao2mMap, 5, 10);
+    let guard = 0;
+    while(dev5.length<5 && guard<50){
+      const pick = weightedPick(lao2mMap, 10) || '';
+      if(pick){ if(!dev5.includes(pick)) dev5.push(pick); }
+      else dev5.push('—');
+      guard++;
+    }
+    while(dev5.length<5) dev5.push('—');
+
+    const conf = Math.min(96, Math.max(35, Math.round(50 + (Object.keys(lao6Map).length+Object.keys(lao4Map).length+Object.keys(lao3Map).length)*1.5 + (Math.random()-0.5)*12)));
+    return { prize1:six1, top3:set4, bottom3:set3, bottom2:dev5, confidence: conf };
+  }
+
+  if(type==='HANOI' || type==='ฮานอย'){
+    const noData = hn5Arr.length===0 && hn6Arr.length===0 && hn7Arr.length===0;
+    if(noData){
+      const msg = `🇻🇳⚠️ ผลรางวัลย้อนหลังไม่เพียงพอ กรุณาเพิ่มผลรางวัล เพื่อ Ai จะได้ประมวลผลเลขเด็ดๆให้ ครับ`;
+      return { insufficient: true, warning: msg, prize1: '——', top3: ['—','—','—'], bottom3: ['—','—','—','—'], bottom2: ['—'], confidence: 0 };
+    }
+    const hn5Map = weightedFreq(hn5Arr, 0.04);
+    const hn6Map = weightedFreq(hn6Arr, 0.05);
+    const hn7Map = weightedFreq(hn7Arr, 0.06);
+    const first5 = Object.keys(hn5Map).length? Object.entries(hn5Map).sort((a,b)=>b[1]-a[1])[0][0] : '—';
+    const p6 = sampleUnique(hn6Map, 3, 8); while(p6.length<3) p6.push('—');
+    const p7 = sampleUnique(hn7Map, 4, 8); while(p7.length<4) p7.push('—');
+    const conf = Math.min(96, Math.max(35, Math.round(50 + (Object.keys(hn6Map).length+Object.keys(hn7Map).length)*1.5 + (Math.random()-0.5)*12)));
+    return { prize1:first5, top3:p6, bottom3:p7, bottom2:['—'], confidence: conf };
+  }
+
+  const insufficientTH = arrFull.length===0;
+  if(insufficientTH){
+    const msg = `🇹🇭⚠️ ผลรางวัลย้อนหลังไม่เพียงพอ กรุณาเพิ่มผลรางวัล เพื่อ Ai จะได้ประมวลผลเลขเด็ดๆให้ ครับ`;
+    return { insufficient: true, warning: msg, prize1: '——', top3: ['—','—','—'], bottom3: ['—','—','—'], bottom2: ['—','—','—'], confidence: 0 };
+  }
+  let bestF = weightedPick(combF, 8) || '000';
+  let bestL = weightedPick(combL, 8) || '000';
+  let prize1 = (bestF + bestL);
+  if(Math.random() < 0.35){ const d = prize1.split(''); const pos = Math.floor(Math.random()*6); d[pos] = String(Math.floor(Math.random()*10)); prize1 = d.join(''); }
+  if(Math.random() < 0.15){ const n = parseInt(prize1,10) || 0; prize1 = String((n + 1 + Math.floor(Math.random()*97)) % 1000000).padStart(6,'0'); }
+  if(Math.random() < 0.02){ const n = parseInt(prize1,10) || 0; prize1 = String((n + Math.floor(Math.random()*37)) % 1000000).padStart(6,'0'); }
   const bottom3 = sampleUnique(lowerMap, 3, 8);
-  if(bottom3.length < 3){
-    const fb = Object.entries(lowerMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
-    for(const x of fb){ if(bottom3.length>=3) break; if(!bottom3.includes(x)) bottom3.push(x); }
-  }
+  if(bottom3.length < 3){ const fb = Object.entries(lowerMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k); for(const x of fb){ if(bottom3.length>=3) break; if(!bottom3.includes(x)) bottom3.push(x); } }
   while(bottom3.length < 3) bottom3.push('—');
-
   const bottom2 = sampleUnique(bottomMap, 3, 8);
-  if(bottom2.length < 3){
-    const fb2 = Object.entries(bottomMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
-    for(const x of fb2){ if(bottom2.length>=3) break; if(!bottom2.includes(x)) bottom2.push(x); }
-  }
+  if(bottom2.length < 3){ const fb2 = Object.entries(bottomMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k); for(const x of fb2){ if(bottom2.length>=3) break; if(!bottom2.includes(x)) bottom2.push(x); } }
   while(bottom2.length < 3) bottom2.push('—');
-
-  // top3: 3 sets from combL
   const top3 = sampleUnique(combL, 3, 5);
 
   // confidence: based on gap between top and second for f3 and l3
@@ -1139,23 +1411,31 @@ function Ai() {
 function runAICalc(){
   const results = Ai();
 
-  // update DOM (main cards)
-  document.getElementById('aiSix') && (document.getElementById('aiSix').innerText = results.prize1 || '—');
-  document.getElementById('aiTop3') && (document.getElementById('aiTop3').innerText = results.top3.join(', ') || '—');
-  document.getElementById('aiBottom3') && (document.getElementById('aiBottom3').innerText = results.bottom3.join(', ') || '—');
-  document.getElementById('aiTwo') && (document.getElementById('aiTwo').innerText = results.bottom2.join(', ') || '—');
-  document.getElementById('aiScore') && (document.getElementById('aiScore').innerText = results.confidence + '%' || '—%');
+  if(results.insufficient){
+    const warn = document.getElementById('aiWarning');
+    const txt = document.getElementById('aiWarningText');
+    const res = document.getElementById('aiResult');
+    if(res) res.classList.add('hidden');
+    if(warn) warn.classList.remove('hidden');
+    if(txt) txt.innerText = results.warning || '';
+  } else {
+    document.getElementById('aiSix') && (document.getElementById('aiSix').innerText = results.prize1 || '—');
+    document.getElementById('aiTop3') && (document.getElementById('aiTop3').innerText = results.top3.join(', ') || '—');
+    document.getElementById('aiBottom3') && (document.getElementById('aiBottom3').innerText = results.bottom3.join(', ') || '—');
+    document.getElementById('aiTwo') && (document.getElementById('aiTwo').innerText = results.bottom2.join(', ') || '—');
+    document.getElementById('aiScore') && (document.getElementById('aiScore').innerText = results.confidence + '%' || '—%');
+  }
 
-  // update small summary
   if(document.getElementById('aiSix_small')) document.getElementById('aiSix_small').innerText = results.prize1 || '—';
   if(document.getElementById('aiTop3_small')) document.getElementById('aiTop3_small').innerText = results.top3.join(', ') || '—';
   if(document.getElementById('aiBottom3_small')) document.getElementById('aiBottom3_small').innerText = results.bottom3.join(', ') || '—';
   if(document.getElementById('aiTwo_small')) document.getElementById('aiTwo_small').innerText = results.bottom2.join(', ') || '—';
   if(document.getElementById('aiScore_small')) document.getElementById('aiScore_small').innerText = results.confidence + '%' || '—%';
 
-  // finish UI
   const load = document.getElementById('aiLoading'); if(load) load.classList.add('hidden');
-  const res = document.getElementById('aiResult'); if(res) res.classList.remove('hidden');
+  const res2 = document.getElementById('aiResult');
+  const warn2 = document.getElementById('aiWarning');
+  if(!results.insufficient){ if(res2) res2.classList.remove('hidden'); if(warn2) warn2.classList.add('hidden'); }
 }
 
 /* ============================
