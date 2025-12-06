@@ -547,7 +547,6 @@ body.bg-moon {
         <div class="card">
           <div id="aiCard4Title" class="text-xs sm:text-sm muted">✨ เลขท้าย 2 ตัว</div>
           <div id="aiTwo" class="text-lg sm:text-xl font-semibold mt-1">—</div>
-          <div class="text-xs muted mt-2">Confidence: <span id="aiScore">—%</span></div>
         </div>
       </div>
 <button onclick="runAIwithAura()" class="btn-primary w-full mt-4">ค้นหาเลขเด็ดงวดถัดไป</button>
@@ -615,20 +614,7 @@ body.bg-moon {
           <div class="text-xs text-white/60">แสดงล่าสุด 12 งวด</div>
         </div>
 
-        <!-- Dropdown Filter -->
-        <div class="relative">
-          <button id="ddBtnHistory" onclick="toggleDDHistory()" class="dd-btn flex items-center gap-2">
-            <span id="ddHistoryFlag">🌐</span>
-            <span id="ddHistoryLabel">ทั้งหมด</span>
-          </button>
-
-          <div id="ddHistoryMenu" class="dd-menu hidden">
-            <div class="dd-item" onclick="setHistoryFilter('all','🌐','ทั้งหมด')">🌐 ทั้งหมด</div>
-            <div class="dd-item" onclick="setHistoryFilter('TH','🇹🇭','ไทย')">🇹🇭 ไทย</div>
-            <div class="dd-item" onclick="setHistoryFilter('LAO','🇱🇦','ลาว')">🇱🇦 ลาว</div>
-            <div class="dd-item" onclick="setHistoryFilter('HANOI','🇻🇳','ฮานอย')">🇻🇳 ฮานอย</div>
-          </div>
-        </div>
+        
 
       </div>
 
@@ -641,6 +627,7 @@ body.bg-moon {
     
 
   </main>
+  <footer class="max-w-6xl mx-auto px-4 mt-8 mb-6 text-center text-white/60 text-xs">copyright @ 2025</footer>
 <script>
 
 
@@ -802,13 +789,19 @@ function updateAIViewForType(t){
     if(s4) s4.firstChild.nodeValue = 'เลขท้าย 2 ตัว: ';
   }
 }
+function clearAIViews(){
+  const ids = ['aiSix','aiTop3','aiBottom3','aiTwo','aiScore','aiSix_small','aiTop3_small','aiBottom3_small','aiTwo_small','aiScore_small'];
+  ids.forEach(id=>{ const el = document.getElementById(id); if(el){ el.innerText = (id.includes('Score')?'—%':'—'); } });
+  const load = document.getElementById('aiLoading'); if(load) load.classList.add('hidden');
+  const warn = document.getElementById('aiWarning'); if(warn) warn.classList.add('hidden');
+  const res = document.getElementById('aiResult'); if(res) res.classList.add('hidden');
+}
 function chooseType(t){
   hideLanding();
-  const flag = (t==='TH')?'🇹🇭':(t==='LAO')?'🇱🇦':'🇻🇳';
-  const label = typeToLabel(t);
-  setHistoryFilter(t, flag, label);
+  historyFilter = t;
   setAddType(t);
   updateAIViewForType(t);
+  clearAIViews();
   setHeaderTypeActive(t);
   renderHistory();
   updateStats();
@@ -856,22 +849,7 @@ function setDD(label, flag){
   const menu = document.getElementById('ddMenu'); if(menu) menu.classList.add('hidden');
 }
 
-/* ============================
-   History dropdown filter
-   ============================ */
-function toggleDDHistory(){
-  const m = document.getElementById('ddHistoryMenu');
-  if(m) m.classList.toggle('hidden');
-}
-function setHistoryFilter(key, flag, label){
-  historyFilter = key; // use key directly ('ไทย'/'ลาว'/'ฮานอย'/'all')
-  const lbl = document.getElementById('ddHistoryLabel');
-  const f = document.getElementById('ddHistoryFlag');
-  if(lbl) lbl.innerText = label;
-  if(f) f.innerText = flag;
-  const m = document.getElementById('ddHistoryMenu'); if(m) m.classList.add('hidden');
-  renderHistory(); // re-render with filter
-}
+ 
 
 
 
@@ -905,14 +883,13 @@ async function saveResult(){
     const threeA = (document.getElementById('threeBottomAInput').value||'').trim();
     const threeB = (document.getElementById('threeBottomBInput').value||'').trim();
     const two = (document.getElementById('twoBottomInput').value||'').trim();
-    if(!full6 || !two){ alert('กรุณากรอก รางวัลที่1 และ เลขท้าย 2 ตัว'); return; }
-    if(!isDigits(full6) || full6.length!==6){ alert('รางวัลที่ 1 ต้องเป็นตัวเลข 6 หลัก'); return; }
-    if(!isDigits(two) || two.length!==2){ alert('เลขท้าย 2 ตัว ต้องเป็นตัวเลข 2 หลัก'); return; }
+    const full6Clean = (isDigits(full6) && full6.length===6) ? pad(full6,6) : '';
+    const twoClean = (isDigits(two) && two.length===2) ? pad(two,2) : '';
     let bottomA='---', bottomB='---';
     if(isDigits(threeA) && threeA.length===3) bottomA = threeA;
     if(isDigits(threeB) && threeB.length===3) bottomB = threeB;
-    payload = { ...payload, full6: pad(full6,6), lower3a: bottomA, lower3b: bottomB, bottom: pad(two,2) };
-    confirmMsg = `ยืนยันการบันทึกข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateVal}\nรางวัลที่ 1: ${full6}\nเลขท้าย 3 ตัว: ${bottomA}${bottomB!=='---'?`, ${bottomB}`:''}\nเลขท้าย 2 ตัว: ${two}`;
+    payload = { ...payload, full6: full6Clean, lower3a: bottomA, lower3b: bottomB, bottom: twoClean };
+    confirmMsg = `ยืนยันการบันทึกข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateVal}\nรางวัลที่ 1: ${full6Clean||'—'}\nเลขท้าย 3 ตัว: ${bottomA}, ${bottomB==='---'?'—':bottomB}\nเลขท้าย 2 ตัว: ${twoClean||'—'}`;
   } else if(type==='LAO'){
     const lao6 = (document.getElementById('laoSixInput')?.value||'').trim();
     const lao4 = (document.getElementById('laoLast4Input')?.value||'').trim();
@@ -950,7 +927,7 @@ async function saveResult(){
   const ok = confirm(confirmMsg);
   if(!ok) return;
   try {
-    const key = `${type}_${dnum}`;
+    const key = `${dnum}`;
     await db.child(key).set(payload);
     closeAddModal();
   } catch (error) {
@@ -1016,7 +993,9 @@ function renderHistory(){
 
   const cardTH = (r, flag, typeLabel, dateFmt) => {
     const top3 = (r.full6 && r.full6.length === 6) ? r.full6.slice(-3) : '—';
-    const lower = [r.lower3a, r.lower3b].filter(x => x && x !== '---').join(", ") || '—';
+    const a = (/^\d{3}$/.test(String(r.lower3a||''))) ? r.lower3a : '—';
+    const b = (/^\d{3}$/.test(String(r.lower3b||''))) ? r.lower3b : '—';
+    const lower = `${a}, ${b}`;
     return `
       <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-full6="${r.full6||''}" data-lower3a="${r.lower3a||''}" data-lower3b="${r.lower3b||''}" data-bottom="${r.bottom||''}">
         <div class="flex justify-between items-start mb-3">
@@ -1469,9 +1448,6 @@ window.runAICalc = runAICalc;
 document.addEventListener('click', (e)=>{
   if(!e.target.closest('.dd-btn') && !e.target.closest('.dd-menu')) {
     const m = document.getElementById('ddMenu'); if(m) m.classList.add('hidden');
-  }
-  if(!e.target.closest('#ddBtnHistory') && !e.target.closest('#ddHistoryMenu')) {
-    const mh = document.getElementById('ddHistoryMenu'); if(mh) mh.classList.add('hidden');
   }
 });
 
