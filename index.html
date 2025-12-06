@@ -362,19 +362,7 @@ body.bg-moon {
   .modal-aura { max-width: 90vw; max-height: 90vh; overflow-y: auto; }
 }
 
-/* Simulator grid */
-@media (max-width: 640px) {
-  .simulator-grid { grid-template-columns: 1fr; }
-  .simulator-grid input { width: 100%; }
-  .simulator-grid select { width: 100%; }
-  .simulator-grid button { grid-column: 1; }
-}
-@media (min-width: 641px) and (max-width: 1024px) {
-  .simulator-grid { grid-template-columns: repeat(4, 1fr); }
-}
-@media (min-width: 1025px) {
-  .simulator-grid { grid-template-columns: repeat(7, 1fr); }
-}
+/* Simulator grid removed */
 
 /* Touch-friendly improvements */
 @media (hover: none) and (pointer: coarse) {
@@ -399,12 +387,12 @@ body.bg-moon {
       <h1 class="text-3xl font-bold mb-2">✨ ยินดีต้อนรับ ✨</h1>
       <p class="text-white/70 mb-6">
         สู่ระบบวิเคราะห์ตัวเลขด้วย AI <br>
-        รุ่น Lucky Aura — โดย LottoGenius
+        รุ่น Lucky Aura — Ensemble by Chaipat
       </p>
 
       <div class="text-left mb-6 space-y-2 text-white/80">
         <div>🔮 วิเคราะห์รางวัลที่ 1 แบบ Ensemble Boost</div>
-        <div>📊 สถิติคำนวณบน-ล่าง แบบความถี่ลับ</div>
+        <div>📊 สถิติคำนวณเลขท้าย แบบความถี่ลับ</div>
         <div>🎲 Lucky 2 ตัว / 3 ตัว พร้อม % ความมั่นใจ</div>
         <div>🏆 ทำงานอัตโนมัติหลังบันทึกผลรางวัล</div>
       </div>
@@ -428,13 +416,25 @@ body.bg-moon {
         </div>
 
         <div>
+          <label class="text-sm">ประเภท</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button id="typeTHBtn" class="dd-btn w-full" onclick="setAddType('TH')">🇹🇭 ไทย</button>
+            <button id="typeLAOBtn" class="dd-btn w-full" onclick="setAddType('LAO')">🇱🇦 ลาว</button>
+            <button id="typeHANOIBtn" class="dd-btn w-full" onclick="setAddType('HANOI')">🇻🇳 ฮานอย</button>
+          </div>
+        </div>
+
+        <div>
           <label class="text-sm">รางวัลที่ 1</label>
           <input id="firstPrizeInput" type="text" maxlength="6" class="input-dd w-full" placeholder="เช่น 461252" />
         </div>
 
         <div>
-          <label class="text-sm">3 ตัวล่าง (คั่นด้วย ,)</label>
-          <input id="threeBottomInput" type="text" class="input-dd w-full" placeholder="เช่น 137, 995" />
+          <label class="text-sm">3 ตัวล่าง</label>
+          <div class="grid grid-cols-2 gap-2">
+            <input id="threeBottomAInput" type="text" maxlength="3" class="input-dd w-full text-center" placeholder="เช่น 137" />
+            <input id="threeBottomBInput" type="text" maxlength="3" class="input-dd w-full text-center" placeholder="เช่น 995" />
+          </div>
         </div>
 
         <div>
@@ -457,7 +457,7 @@ body.bg-moon {
       </div>
       <div>
         <div class="text-lg sm:text-xl font-bold text-gold">AI ให้หวยแม่นๆ</div>
-        <div class="muted text-xs">Lucky Aura · Ensemble</div>
+        <div class="muted text-xs">Ai · Ensemble by Chaipat</div>
       </div>
     </div>
 
@@ -490,35 +490,36 @@ body.bg-moon {
   <!-- AI AURA CARD -->
   <div class="max-w-6xl mx-auto px-4 mt-3 sm:mt-4">
     <div class="aura-card p-4 sm:p-6 mt-3 sm:mt-4">
-      <h2 class="text-base sm:text-lg font-bold text-white mb-3">🌟 แนวทาง AI (Lucky Aura)</h2>
+      <h2 class="text-base sm:text-lg font-bold text-white mb-3">🌟 แนวทาง AI ให้โชค</h2>
 
       <div id="aiLoading" class="hidden text-center my-4 sm:my-6">
         <div class="ai-spinner"></div>
-        <p class="text-white/60 mt-2 text-xs sm:text-sm">AI กำลังประมวลผลพลังงานตัวเลข...</p>
+        <p class="text-white/60 mt-2 text-xs sm:text-sm">AI กำลังประมวลผลค้นหาเลขเด็ด!...</p>
       </div>
 
       <div id="aiResult" class="ai-result-grid grid gap-3 sm:gap-4 text-white">
         <div class="card">
-          <div class="text-xs sm:text-sm muted">รางวัลที่ 1 (6 หลัก)</div>
+          <div class="text-xs sm:text-sm muted">🏆 รางวัลที่ 1 </div>
           <div id="aiSix" class="text-xl sm:text-2xl font-bold mt-1">—</div>
         </div>
 
         <div class="card">
-          <div class="text-xs sm:text-sm muted">🎯 3 ตัวบน</div>
+          <div class="text-xs sm:text-sm muted">🎯 เลขท้าย 3 ตัวรางวัลที่ 1</div>
           <div id="aiTop3" class="text-lg sm:text-xl font-semibold mt-1">—</div>
         </div>
 
         <div class="card">
-          <div class="text-xs sm:text-sm muted">🎲 3 ตัวล่าง</div>
+          <div class="text-xs sm:text-sm muted">🎲 เลขท้าย 3 ตัว</div>
           <div id="aiBottom3" class="text-lg sm:text-xl font-semibold mt-1">—</div>
         </div>
 
         <div class="card">
-          <div class="text-xs sm:text-sm muted">✨ 2 ตัวล่าง</div>
-          <div id="aiTwo" class="text-lg sm:text-xl font-semibold mt-1">—</div>
-          <div class="text-xs muted mt-2">Confidence: <span id="aiScore">—%</span></div>
-        </div>
-      </div>
+    <div class="text-xs sm:text-sm muted">✨ เลขท้าย 2 ตัว</div>
+    <div id="aiTwo" class="text-lg sm:text-xl font-semibold mt-1">—</div>
+    <div class="text-xs muted mt-2">Confidence: <span id="aiScore">—%</span></div>
+  </div>
+</div>
+<button onclick="runAIwithAura()" class="btn-primary w-full mt-4">ค้นหาเลขเด็ดงวดถัดไป</button>
     </div>
   </div>
 
@@ -538,22 +539,22 @@ body.bg-moon {
 
       <!-- Pie Chart -->
       <div class="card">
-        <h3 class="text-lg font-semibold mb-3">⚖️ สัดส่วน เลขบน vs เลขล่าง</h3>
+        <h3 class="text-lg font-semibold mb-3">⚖️ สัดส่วน เลขท้ายรางวัลที่ 1 vs เลขท้าย 3 ตัว</h3>
         <canvas id="pieChart" height="160"></canvas>
       </div>
 
       <!-- AI Aura Summary -->
       <div class="card">
-        <h3 class="text-lg font-semibold mb-3">🔮 สรุปพลังงาน AI</h3>
+        <h3 class="text-lg font-semibold mb-3">🔮 สรุป AI ให้หวยแม่นๆ</h3>
 
         <div class="text-sm text-white/70 space-y-1">
           <div>รางวัลที่ 1:  
             <span id="aiSix_small" class="text-gold font-bold"></span>
           </div>
-          <div>3 ตัวบน: <span id="aiTop3_small" class="text-gold"></span></div>
-          <div>3 ตัวล่าง: <span id="aiBottom3_small" class="text-gold"></span></div>
-          <div>2 ตัวล่าง: <span id="aiTwo_small" class="text-gold"></span></div>
-          <div>Confidence: <span id="aiScore_small" class="text-gold font-bold"></span></div>
+          <div>เลขท้าย 3 ตัวรางวัลที่ 1: <span id="aiTop3_small" class="text-gold"></span></div>
+          <div>เลขท้าย 3 ตัว: <span id="aiBottom3_small" class="text-gold"></span></div>
+          <div>เลขท้าย 2 ตัว: <span id="aiTwo_small" class="text-gold"></span></div>
+          <div>ความมั่นใจ: <span id="aiScore_small" class="text-gold font-bold"></span></div>
         </div>
       </div>
 
@@ -567,7 +568,7 @@ body.bg-moon {
       <div class="flex justify-between items-center mb-4">
 
         <div>
-          <h2 class="text-xl font-bold text-white">ผลรางวัลย้อนหลัง</h2>
+          <h2 class="text-xl font-bold text-white">🗂️ ผลรางวัลย้อนหลัง</h2>
           <div class="text-xs text-white/60">แสดงล่าสุด 12 งวด</div>
         </div>
 
@@ -594,58 +595,95 @@ body.bg-moon {
 
 
 
-    <!-- ===============================
-         SIMULATOR (ADD RESULT QUICK)
-         =============================== -->
-    <section class="card p-5 mb-10">
-      <h3 class="font-semibold text-white mb-4">🧪 เพิ่มผลรางวัลใหม่ (Simulator)</h3>
-
-      <div class="simulator-grid grid gap-2 sm:gap-3">
-        
-        <select id="simType" class="input-dd">
-          <option value="TH">🇹🇭 ไทย</option>
-          <option value="LAO">🇱🇦 ลาว</option>
-          <option value="HANOI">🇻🇳 ฮานอย</option>
-        </select>
-
-        <input id="simDate" type="date" class="input-dd"/>
-
-        <input id="simFull6" maxlength="6" placeholder="รางวัลที่ 1" class="input-dd text-center"/>
-
-        <input id="simLowerA" maxlength="3" placeholder="3 ล่าง 1" class="input-dd text-center"/>
-        <input id="simLowerB" maxlength="3" placeholder="3 ล่าง 2" class="input-dd text-center"/>
-        
-        <input id="simBottom" maxlength="2" placeholder="2 ล่าง" class="input-dd text-center"/>
-
-        <button onclick="saveSimulator()" class="btn-primary w-full">บันทึก</button>
-      </div>
-
-    </section>
+    
 
   </main>
 <script>
-/* ============================
-   Firebase config & init
-   ============================ */
-const firebaseConfig = {
-  apiKey:"AIzaSyCkS6eu3SuB5McIkS_7J8srMIhXQ7osc-E",
-  authDomain:"huaymaen-lottoai.firebaseapp.com",
-  databaseURL:"https://huaymaen-lottoai-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:"huaymaen-lottoai",
-  storageBucket:"huaymaen-lottoai.firebasestorage.app",
-  messagingSenderId:"326340239586",
-  appId:"1:326340239586:web:563d03ca906ca4ba327ebb",
-  measurementId:"G-MF97ZM968E"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database().ref("lottery");
+
 
 /* ============================
-   Global state
+
+   Firebase config & init
+
    ============================ */
+
+const firebaseConfig = {
+
+  apiKey:"AIzaSyCkS6eu3SuB5McIkS_7J8srMIhXQ7osc-E",
+
+  authDomain:"huaymaen-lottoai.firebaseapp.com",
+
+  databaseURL:"https://huaymaen-lottoai-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+  projectId:"huaymaen-lottoai",
+
+  storageBucket:"huaymaen-lottoai.firebasestorage.app",
+
+  messagingSenderId:"326340239586",
+
+  appId:"1:326340239586:web:563d03ca906ca4ba327ebb",
+
+  measurementId:"G-MF97ZM968E"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database().ref("lottery");
+
+
+/* ============================
+
+   Load data from Firebase
+
+   ============================ */
+
+db.on('value', (snap) => {
+
+  allData = [];
+
+  if(snap.val()){
+
+    Object.values(snap.val()).forEach(r => allData.push(r));
+
+    allData.sort((a,b)=> b.date.localeCompare(a.date));
+
+  }
+
+  renderHistory();
+
+  updateStats();
+
+});
+
+
+/* ============================
+
+   Global state
+
+   ============================ */
+
 let allData = [];          // raw data from firebase
 let historyFilter = 'all'; // 'all'|'ไทย'|'ลาว'|'ฮานอย'
 let pieChart = null;
+
+let addType = 'TH';
+function setAddType(t){
+  addType = t;
+  const ids = {TH:'typeTHBtn', LAO:'typeLAOBtn', HANOI:'typeHANOIBtn'};
+  ['typeTHBtn','typeLAOBtn','typeHANOIBtn'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){ el.classList.remove('btn-primary'); el.classList.add('dd-btn'); }
+  });
+  const el = document.getElementById(ids[t]);
+  if(el){ el.classList.remove('dd-btn'); el.classList.add('btn-primary'); }
+}
+function typeToLabel(t){
+  if(t==='TH') return 'ไทย';
+  if(t==='LAO') return 'ลาว';
+  if(t==='HANOI') return 'ฮานอย';
+  return t;
+}
 
 /* ======= small utils ======= */
 const pad = (s,n=2)=>String(s||'').padStart(n,'0');
@@ -660,8 +698,7 @@ function closeOnboard(){
   localStorage.setItem('lg_onboard_done','yes');
 }
 (function maybeOpenOnboard(){
-  const done = localStorage.getItem('lg_onboard_done');
-  if(!done) setTimeout(openOnboard, 700);
+  setTimeout(openOnboard, 700);
 })();
 
 /* ============================
@@ -671,8 +708,9 @@ function openAddModal(){ document.getElementById('addModal').classList.remove('h
 function closeAddModal(){
   document.getElementById('addModal').classList.add('hidden');
   // clear fields
-  const ids = ['dateInput','firstPrizeInput','threeBottomInput','twoBottomInput'];
+  const ids = ['dateInput','firstPrizeInput','threeBottomAInput','threeBottomBInput','twoBottomInput'];
   ids.forEach(id=>{ const el = document.getElementById(id); if(el) el.value=''; });
+  setAddType('TH');
 }
 
 /* ============================
@@ -709,16 +747,7 @@ function setHistoryFilter(key, flag, label){
   renderHistory(); // re-render with filter
 }
 
-/* ============================
-   PLAY SAVE SOUND
-   ============================ */
-function playSaveSound(){
-  try{
-    const audio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/10/audio_7e953a57c8.mp3?filename=ui-design-confirmation-4-20687.mp3");
-    audio.volume = 0.35;
-    audio.play().catch(()=>{/* ignore autoplay block */});
-  }catch(e){}
-}
+
 
 /* ============================
    Helper: check duplicate by date+type
@@ -738,45 +767,36 @@ function hasDuplicate(dateStr, typeStr){
 async function saveResult(){
   const dateVal = document.getElementById('dateInput').value;
   const full6 = (document.getElementById('firstPrizeInput').value||'').trim();
-  const three = (document.getElementById('threeBottomInput').value||'').trim();
+  const threeA = (document.getElementById('threeBottomAInput').value||'').trim();
+  const threeB = (document.getElementById('threeBottomBInput').value||'').trim();
   const two = (document.getElementById('twoBottomInput').value||'').trim();
 
   if(!dateVal || !full6 || !two){
-    alert('กรุณากรอกข้อมูลให้ครบ (วันที่, รางวัลที่1 6หลัก, 2ล่าง)');
+    alert('กรุณากรอกข้อมูลให้ครบ (วันที่, รางวัลที่1 , เลขท้าย 3 ตัว , เลขท้าย 2 ตัว)');
     return;
   }
   if(!isDigits(full6) || full6.length !== 6){
     alert('รางวัลที่ 1 ต้องเป็นตัวเลข 6 หลัก');
     return;
   }
+  if(!isDigits(threeA) || threeA.length !== 3){
+    alert('เลขท้าย 3 ตัวรางวัลที่ 1 ต้องเป็นตัวเลข 3 หลัก');
+    return;
+  }
   if(!isDigits(two) || two.length !== 2){
-    alert('2 ล่าง ต้องเป็นตัวเลข 2 หลัก');
+    alert('เลขท้าย 2 ตัว ต้องเป็นตัวเลข 2 หลัก');
     return;
   }
 
   const dnum = dateVal.replace(/-/g,'');
-  // detect type: header ddLabel has 'ไทย' etc (we'll use header flag as type)
-  const hdr = (document.getElementById('ddLabel')?.innerText || 'ไทย');
-  const type = hdr; // 'ไทย'/'ลาว'/'ฮานอย'
+  const type = addType;
 
-  if(hasDuplicate(dnum, type)){
-    // allow user to close modal and go see results -> do not block
-    const ok = confirm('งวดนี้ถูกบันทึกแล้ว จะปิดหน้าต่างเพื่อดูหน้าหลักหรือยกเลิกการบันทึก? \n\nOK = ปิดหน้าต่างไปดูหน้าหลัก, Cancel = ยังคงเปิด');
-    if(ok){
-      closeAddModal();
-      return;
-    } else {
-      return;
-    }
-  }
+  // allow duplicate save if same date+type exists
 
-  // parse three bottom (csv)
+  // 3 ล่างสองช่อง (optional, sanitize to 3 digits or '---')
   let bottomA='---', bottomB='---';
-  if(three){
-    const parts = three.split(',').map(s=>s.trim()).filter(Boolean);
-    bottomA = parts[0]||'---';
-    bottomB = parts[1]||'---';
-  }
+  if(isDigits(threeA) && threeA.length===3) bottomA = threeA;
+  if(isDigits(threeB) && threeB.length===3) bottomB = threeB;
 
   const payload = {
     date: dnum,
@@ -787,94 +807,27 @@ async function saveResult(){
     bottom: pad(two,2)
   };
 
-  await db.push(payload);
-  playSaveSound();
+  const typeLabel = typeToLabel(type);
+  const confirmMsg = `ยืนยันการบันทึกข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateVal}\nรางวัลที่ 1: ${full6}\nเลขท้าย 3 ตัว: ${bottomA}${bottomB!=='---'?`, ${bottomB}`:''}\nเลขท้าย 2 ตัว: ${two}`;
+  const ok = confirm(confirmMsg);
+  if(!ok) return;
 
-  // close + clear
-  closeAddModal();
-
-  // run AI & small flash
-  runAIwithAura();
+  try {
+    const key = `${type}_${dnum}`;
+    await db.child(key).set(payload);
+    // close + clear
+    closeAddModal();
+  } catch (error) {
+    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + error.message + '. กรุณาตรวจสอบการเชื่อมต่อหรือสิทธิ์ใน Firebase.');
+  }
 }
 
-/* ============================
-   Simulator quick-save (bottom form)
-   same validations and behavior
-   ============================ */
-async function saveSimulator(){
-  const sType = document.getElementById('simType').value || 'ไทย';
-  const sDate = document.getElementById('simDate').value;
-  const sFull = (document.getElementById('simFull6').value||'').trim();
-  const sA = (document.getElementById('simLowerA').value||'').trim();
-  const sB = (document.getElementById('simLowerB').value||'').trim();
-  const sTwo = (document.getElementById('simBottom').value||'').trim();
 
-  if(!sDate || !sFull || !sTwo){
-    alert('กรุณากรอกข้อมูลให้ครบ (วันที่, รางวัล6หลัก, 2ล่าง)');
-    return;
-  }
-  if(!isDigits(sFull) || sFull.length !== 6){
-    alert('รางวัลที่ 1 ต้องเป็นตัวเลข 6 หลัก');
-    return;
-  }
-  if(!isDigits(sTwo) || sTwo.length !== 2){
-    alert('2 ล่าง ต้องเป็นตัวเลข 2 หลัก');
-    return;
-  }
-
-  const dnum = sDate.replace(/-/g,'');
-  if(hasDuplicate(dnum, sType)){
-    if(!confirm('รายการนี้มีอยู่แล้ว ต้องการปิดไปยังหน้าหลักหรือยกเลิก?')) return;
-    // allow close: do nothing else
-    return;
-  }
-
-  const payload = {
-    date: dnum,
-    type: sType,
-    full6: pad(sFull,6),
-    lower3a: sA || '---',
-    lower3b: sB || '---',
-    bottom: pad(sTwo,2)
-  };
-
-  await db.push(payload);
-  playSaveSound();
-
-  // clear simulator inputs
-  ['simDate','simFull6','simLowerA','simLowerB','simBottom'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-
-  // run AI
-  runAIwithAura();
-}
 
 /* ============================
    Firebase listener -> keep allData up-to-date
    ============================ */
-db.on('value', snap=>{
-  allData = [];
-  snap.forEach(ch=>{
-    const v = ch.val();
-    // ensure fields exist to avoid runtime errors
-    allData.push({
-      date: String(v.date||''),
-      type: String(v.type||'ไทย'),
-      full6: String(v.full6||'000000'),
-      lower3a: String(v.lower3a||'---'),
-      lower3b: String(v.lower3b||'---'),
-      bottom: String(v.bottom||'00')
-    });
-  });
-  // sort desc by date (string compare ok for YYYYMMDD)
-  allData.sort((a,b)=> b.date.localeCompare(a.date));
-
-  renderHistory();
-  updateStats();
-
-  // if dataset just became non-empty and onboarding not done -> don't force modal
-  // AI initial run
-  runAICalc();
-});
+// handled above (single listener)
 
 /* ============================
    Render history (cards)
@@ -887,18 +840,27 @@ function renderHistory(){
   
   let arr = allData.slice();
 
-  // DEDUPLICATE first: keep only first occurrence of each date+type
-  const seen = new Set();
-  arr = arr.filter(r => {
+  const is3 = s => /^\d{3}$/.test(String(s||''));
+  const is2 = s => /^\d{2}$/.test(String(s||''));
+  const byKey = new Map();
+  arr.forEach(r => {
     const key = r.date + '|' + r.type;
-    if(seen.has(key)) return false;
-    seen.add(key);
-    return true;
+    const score = (is3(r.lower3a)?1:0) + (is3(r.lower3b)?1:0) + (is2(r.bottom)?1:0) + (String(r.full6||'').length===6?1:0);
+    const exist = byKey.get(key);
+    if(!exist || score > exist._score) { r._score = score; byKey.set(key, r); }
   });
+  arr = Array.from(byKey.values());
+  arr.sort((a,b)=> b.date.localeCompare(a.date));
 
   // Apply type filter (only if not 'all')
   if(historyFilter && historyFilter !== 'all'){
-    arr = arr.filter(r => String(r.type).trim() === String(historyFilter).trim());
+    arr = arr.filter(r => {
+      const t = String(r.type).trim();
+      if(historyFilter==='TH') return t==='TH' || t==='ไทย';
+      if(historyFilter==='LAO') return t==='LAO' || t==='ลาว';
+      if(historyFilter==='HANOI') return t==='HANOI' || t==='ฮานอย';
+      return true;
+    });
   }
 
   arr = arr.slice(0, 12);
@@ -911,12 +873,15 @@ function renderHistory(){
   box.innerHTML = arr.map(r => {
     const top3 = (r.full6 && r.full6.length === 6) ? r.full6.slice(-3) : '-';
     const lower = [r.lower3a, r.lower3b].filter(x => x && x !== '---').join(", ") || '-';
-    const flag = r.type === 'TH' ? '🇹🇭' : r.type === 'LAO' ? '🇱🇦' : r.type === 'HANOI' ? '🇻🇳' : '🌐';
+    const flag = (r.type === 'TH' || r.type==='ไทย') ? '🇹🇭'
+      : (r.type==='LAO' || r.type==='ลาว') ? '🇱🇦'
+      : (r.type==='HANOI' || r.type==='ฮานอย') ? '🇻🇳' : '🌐';
     const typeLabel = r.type === 'TH' ? 'ไทย' : r.type === 'LAO' ? 'ลาว' : r.type === 'HANOI' ? 'ฮานอย' : r.type;
+
     const dateFmt = `${r.date.slice(6,8)}/${r.date.slice(4,6)}/${r.date.slice(0,4)}`;
 
     return `
-      <div class="result-card p-4">
+      <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-full6="${r.full6||''}" data-lower3a="${r.lower3a||''}" data-lower3b="${r.lower3b||''}" data-bottom="${r.bottom||''}">
         <div class="flex justify-between items-start mb-3">
           <div class="text-sm text-white/70">${flag} <span class="font-semibold ml-1">${typeLabel}</span></div>
           <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
@@ -926,15 +891,15 @@ function renderHistory(){
 
         <div class="grid grid-cols-3 gap-2 text-sm">
           <div class="text-center">
-            <div class="text-xs text-white/60">3 บน</div>
+            <div class="text-xs text-white/60">เลขท้ายรางวัลที่ 1</div>
             <div class="font-bold text-green-300">${top3}</div>
           </div>
           <div class="text-center">
-            <div class="text-xs text-white/60">3 ล่าง</div>
+            <div class="text-xs text-white/60">เลขท้าย 3 ตัว</div>
             <div class="font-bold text-green-300">${lower}</div>
           </div>
           <div class="text-center">
-            <div class="text-xs text-white/60">2 ล่าง</div>
+            <div class="text-xs text-white/60">เลขท้าย 2 ตัว</div>
             <div class="font-bold text-pink-300">${r.bottom}</div>
           </div>
         </div>
@@ -962,10 +927,26 @@ function updateStats(){
     pieChart = new Chart(ctx, {
       type:'doughnut',
       data:{
-        labels:['เลขบน','เลขล่าง'],
+        labels:['เลขท้ายรางวัลที่ 1','เลขท้าย 3 ตัว'],
         datasets:[{ data:[topCount, bottomCount], backgroundColor:['#c084fc','#4f46e5'] }]
       },
-      options:{ plugins:{ legend:{ labels:{ color:'white' }, position:'bottom' } } }
+      options:{
+        plugins:{
+          legend:{
+            labels:{
+              color:'white',
+              font:{ family:'Prompt', size:13, weight:'600' }
+            },
+            position:'bottom'
+          },
+          tooltip:{
+            titleColor:'white',
+            bodyColor:'white',
+            titleFont:{ family:'Prompt', weight:'600' },
+            bodyFont:{ family:'Prompt' }
+          }
+        }
+      }
     });
   }
 
@@ -976,9 +957,9 @@ function updateStats(){
     const n = pad(r.bottom,2);
     freq[n] = (freq[n]||0) + 1;
   });
-  const top5 = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([n])=>n);
+  const top10 = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([n])=>n);
   const el = document.getElementById('freq2');
-  if(el) el.innerHTML = top5.map(n=>`<div class="text-white badge-sm">${n}</div>`).join(' ');
+  if(el) el.innerHTML = top10.map(n=>`<div class="text-white badge-sm">${n}</div>`).join(' ');
 }
 
 /* ============================
@@ -1000,30 +981,45 @@ function runAIwithAura(){
 }
 
 /* ============================
-   Core AI calculation
-   - weighted freq + delta-ish + ensemble-ish
-   - returns and updates UI
+   Collect dataset from History table (visible entries)
    ============================ */
-function runAICalc(){
-  if(allData.length === 0){
-    // clear UI
-    ['aiSix','aiTop3','aiBottom3','aiTwo','aiScore','aiSix_small','aiTop3_small','aiBottom3_small','aiTwo_small','aiScore_small']
-      .forEach(id=>{ if(document.getElementById(id)) document.getElementById(id).innerText = '—'; });
-    document.getElementById('aiLoading') && document.getElementById('aiLoading').classList.add('hidden');
-    return;
+function getTableData(){
+  const cards = Array.from(document.querySelectorAll('#historyList .result-card'));
+  const clean3 = s => { const v = String(s||'').trim(); return (/^\d{3}$/.test(v) ? v : ''); };
+  const clean2 = s => { const v = String(s||'').trim(); return (/^\d{2}$/.test(v) ? v : ''); };
+  const clean6 = s => { const v = String(s||'').trim(); return (/^\d{6}$/.test(v) ? v : ''); };
+  return cards.map(card=>({
+    date: card.getAttribute('data-date')||'',
+    type: card.getAttribute('data-type')||'TH',
+    full6: clean6(card.getAttribute('data-full6')),
+    lower3a: clean3(card.getAttribute('data-lower3a')),
+    lower3b: clean3(card.getAttribute('data-lower3b')),
+    bottom: clean2(card.getAttribute('data-bottom'))
+  }));
+}
+
+/* ============================
+   Core AI calculation (from history table)
+   ============================ */
+function Ai() {
+  const tableData = getTableData();
+  if(tableData.length === 0) {
+    return { prize1: '——', top3: ['—', '—', '—'], bottom3: ['—', '—', '—'], bottom2: ['—', '—', '—'], confidence: 0 };
   }
 
-  // prepare arrays (most recent first)
-  const arrFull = allData.map(r=>r.full6).filter(Boolean);
+  // prepare arrays (most recent first from visible table)
+  const arrFull = tableData.map(r=>r.full6).filter(Boolean);
   const f3Arr = arrFull.map(s=> s.slice(0,3));
   const l3Arr = arrFull.map(s=> s.slice(3));
 
+  const is3 = s => /^\d{3}$/.test(String(s||''));
+  const is2 = s => /^\d{2}$/.test(String(s||''));
   const lowerArr = [];
-  allData.forEach(r=>{
-    if(r.lower3a && r.lower3a!=='---') lowerArr.push(r.lower3a);
-    if(r.lower3b && r.lower3b!=='---') lowerArr.push(r.lower3b);
+  tableData.forEach(r=>{
+    if(is3(r.lower3a)) lowerArr.push(r.lower3a);
+    if(is3(r.lower3b)) lowerArr.push(r.lower3b);
   });
-  const bottomArr = allData.map(r=>r.bottom).filter(Boolean);
+  const bottomArr = tableData.map(r=>r.bottom).filter(v=>is2(v));
 
   // weighted frequency function (decay by index)
   const weightedFreq = (arr, decay=0.045) => {
@@ -1034,7 +1030,27 @@ function runAICalc(){
     return m;
   };
 
-  const topN = (m, n=5) => Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,n).map(([k])=>k);
+  const topN = (m, n=3) => Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,n).map(([k])=>k);
+  const weightedPick = (m, k=5) => {
+    const entries = Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,k);
+    const total = entries.reduce((s, [,w])=> s + w, 0);
+    if(entries.length === 0) return '';
+    if(total <= 0) return entries[0][0];
+    let r = Math.random() * total;
+    for(const [key, w] of entries){ r -= w; if(r <= 0) return key; }
+    return entries[0][0];
+  };
+  const sampleUnique = (m, count=3, k=5) => {
+    const res = [];
+    const tmp = {...m};
+    for(let i=0; i<count; i++){
+      const p = weightedPick(tmp, k);
+      if(!p) break;
+      res.push(p);
+      delete tmp[p];
+    }
+    return res;
+  };
 
   const mapF = weightedFreq(f3Arr, 0.045);
   const mapL = weightedFreq(l3Arr, 0.045);
@@ -1064,28 +1080,46 @@ function runAICalc(){
   const combF = combine(mapF, deltaF);
   const combL = combine(mapL, deltaL);
 
-  const candF = topN(combF, 5);
-  const candL = topN(combL, 5);
-
-  const pick = arr => arr && arr.length ? arr[0] : '000';
-
-  let bestF = pick(candF);
-  let bestL = pick(candL);
+  let bestF = weightedPick(combF, 8) || '000';
+  let bestL = weightedPick(combL, 8) || '000';
 
   // assemble 6-digit
-  let fullPredict = (bestF + bestL);
+  let prize1 = (bestF + bestL);
 
-  // slight lucky jitter (very small chance)
+  if(Math.random() < 0.35){
+    const d = prize1.split('');
+    const pos = Math.floor(Math.random()*6);
+    d[pos] = String(Math.floor(Math.random()*10));
+    prize1 = d.join('');
+  }
+  if(Math.random() < 0.15){
+    const n = parseInt(prize1,10) || 0;
+    prize1 = String((n + 1 + Math.floor(Math.random()*97)) % 1000000).padStart(6,'0');
+  }
   if(Math.random() < 0.02){
-    const n = parseInt(fullPredict,10) || 0;
-    fullPredict = String((n + Math.floor(Math.random()*37)) % 1000000).padStart(6,'0');
+    const n = parseInt(prize1,10) || 0;
+    prize1 = String((n + Math.floor(Math.random()*37)) % 1000000).padStart(6,'0');
   }
 
   // lower3 & bottom2 predictions
   const lowerMap = weightedFreq(lowerArr, 0.05);
   const bottomMap = weightedFreq(bottomArr, 0.06);
-  const lowerPred = topN(lowerMap, 3);
-  const bottomPred = topN(bottomMap, 5);
+  const bottom3 = sampleUnique(lowerMap, 3, 8);
+  if(bottom3.length < 3){
+    const fb = Object.entries(lowerMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
+    for(const x of fb){ if(bottom3.length>=3) break; if(!bottom3.includes(x)) bottom3.push(x); }
+  }
+  while(bottom3.length < 3) bottom3.push('—');
+
+  const bottom2 = sampleUnique(bottomMap, 3, 8);
+  if(bottom2.length < 3){
+    const fb2 = Object.entries(bottomMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
+    for(const x of fb2){ if(bottom2.length>=3) break; if(!bottom2.includes(x)) bottom2.push(x); }
+  }
+  while(bottom2.length < 3) bottom2.push('—');
+
+  // top3: 3 sets from combL
+  const top3 = sampleUnique(combL, 3, 5);
 
   // confidence: based on gap between top and second for f3 and l3
   const calcConf = (map) => {
@@ -1095,21 +1129,29 @@ function runAICalc(){
     const s = Math.min(96, Math.max(35, Math.round(50 + diff * 30)));
     return s;
   };
-  const conf = Math.round((calcConf(mapF) + calcConf(mapL)) / 2);
+  let confidence = Math.round((calcConf(mapF) + calcConf(mapL)) / 2);
+  const jitter = Math.round((Math.random() - 0.5) * 12);
+  confidence = Math.min(96, Math.max(35, confidence + jitter));
+
+  return { prize1, top3, bottom3, bottom2, confidence };
+}
+
+function runAICalc(){
+  const results = Ai();
 
   // update DOM (main cards)
-  document.getElementById('aiSix') && (document.getElementById('aiSix').innerText = fullPredict);
-  document.getElementById('aiTop3') && (document.getElementById('aiTop3').innerText = fullPredict.slice(-3));
-  document.getElementById('aiBottom3') && (document.getElementById('aiBottom3').innerText = lowerPred[0]||'—');
-  document.getElementById('aiTwo') && (document.getElementById('aiTwo').innerText = (bottomPred[0]||'—'));
-  document.getElementById('aiScore') && (document.getElementById('aiScore').innerText = conf + '%');
+  document.getElementById('aiSix') && (document.getElementById('aiSix').innerText = results.prize1 || '—');
+  document.getElementById('aiTop3') && (document.getElementById('aiTop3').innerText = results.top3.join(', ') || '—');
+  document.getElementById('aiBottom3') && (document.getElementById('aiBottom3').innerText = results.bottom3.join(', ') || '—');
+  document.getElementById('aiTwo') && (document.getElementById('aiTwo').innerText = results.bottom2.join(', ') || '—');
+  document.getElementById('aiScore') && (document.getElementById('aiScore').innerText = results.confidence + '%' || '—%');
 
   // update small summary
-  if(document.getElementById('aiSix_small')) document.getElementById('aiSix_small').innerText = fullPredict;
-  if(document.getElementById('aiTop3_small')) document.getElementById('aiTop3_small').innerText = fullPredict.slice(-3);
-  if(document.getElementById('aiBottom3_small')) document.getElementById('aiBottom3_small').innerText = lowerPred[0]||'—';
-  if(document.getElementById('aiTwo_small')) document.getElementById('aiTwo_small').innerText = bottomPred[0]||'—';
-  if(document.getElementById('aiScore_small')) document.getElementById('aiScore_small').innerText = conf + '%';
+  if(document.getElementById('aiSix_small')) document.getElementById('aiSix_small').innerText = results.prize1 || '—';
+  if(document.getElementById('aiTop3_small')) document.getElementById('aiTop3_small').innerText = results.top3.join(', ') || '—';
+  if(document.getElementById('aiBottom3_small')) document.getElementById('aiBottom3_small').innerText = results.bottom3.join(', ') || '—';
+  if(document.getElementById('aiTwo_small')) document.getElementById('aiTwo_small').innerText = results.bottom2.join(', ') || '—';
+  if(document.getElementById('aiScore_small')) document.getElementById('aiScore_small').innerText = results.confidence + '%' || '—%';
 
   // finish UI
   const load = document.getElementById('aiLoading'); if(load) load.classList.add('hidden');
@@ -1131,9 +1173,9 @@ function auraFlash(){
    Small helper: run on load to compute initial AI
    ============================ */
 function tryInitialAI(){
-  if(allData.length > 0) runAICalc();
+  // manual-only: do not auto-run AI after data load
 }
-setTimeout(tryInitialAI, 600);
+// no auto-trigger; user clicks the button to run AI
 
 /* ============================
    Utility: manual trigger for testing
