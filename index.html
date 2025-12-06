@@ -519,6 +519,7 @@ body.bg-moon {
   <div id="auraSection" class="max-w-6xl mx-auto px-4 mt-3 sm:mt-4">
     <div class="aura-card p-4 sm:p-6 mt-3 sm:mt-4">
       <h2 class="text-base sm:text-lg font-bold text-white mb-3">🌟 แนวทาง AI ให้โชค</h2>
+      <div class="text-center text-white/80 mb-2">ความมั่นใจ: <span id="aiScore_center">—%</span></div>
 
       <div id="aiLoading" class="hidden text-center my-4 sm:my-6">
         <div class="ai-spinner"></div>
@@ -792,6 +793,7 @@ function updateAIViewForType(t){
 function clearAIViews(){
   const ids = ['aiSix','aiTop3','aiBottom3','aiTwo','aiScore','aiSix_small','aiTop3_small','aiBottom3_small','aiTwo_small','aiScore_small'];
   ids.forEach(id=>{ const el = document.getElementById(id); if(el){ el.innerText = (id.includes('Score')?'—%':'—'); } });
+  const cs = document.getElementById('aiScore_center'); if(cs) cs.innerText = '—%';
   const load = document.getElementById('aiLoading'); if(load) load.classList.add('hidden');
   const warn = document.getElementById('aiWarning'); if(warn) warn.classList.add('hidden');
   const res = document.getElementById('aiResult'); if(res) res.classList.add('hidden');
@@ -1410,6 +1412,7 @@ function runAICalc(){
   if(document.getElementById('aiBottom3_small')) document.getElementById('aiBottom3_small').innerText = results.bottom3.join(', ') || '—';
   if(document.getElementById('aiTwo_small')) document.getElementById('aiTwo_small').innerText = results.bottom2.join(', ') || '—';
   if(document.getElementById('aiScore_small')) document.getElementById('aiScore_small').innerText = results.confidence + '%' || '—%';
+  if(document.getElementById('aiScore_center')) document.getElementById('aiScore_center').innerText = results.confidence + '%' || '—%';
 
   const load = document.getElementById('aiLoading'); if(load) load.classList.add('hidden');
   const res2 = document.getElementById('aiResult');
