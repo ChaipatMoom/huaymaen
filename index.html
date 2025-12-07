@@ -829,7 +829,7 @@ function updateAIViewForType(t){
     if(t1) t1.innerText = '🏆 รางวัลที่ 1 (5 หลัก)';
     if(t2) t2.innerText = '🎯 รางวัลที่ 6 (3 หลัก x3)';
     if(t3) t3.innerText = '🎲 รางวัลที่ 7 (2 หลัก x4)';
-    if(t4) t4.innerText = '✨ ความมั่นใจ';
+    if(t4) t4.innerText = '✨ เลขท้าย 2 ตัว';
     if(s1) s1.firstChild.nodeValue = 'รางวัลที่ 1 (5 หลัก):  ';
     if(s2) s2.firstChild.nodeValue = 'รางวัลที่ 6 (3 หลัก x3): ';
     if(s3) s3.firstChild.nodeValue = 'รางวัลที่ 7 (2 หลัก x4): ';
@@ -1483,9 +1483,26 @@ function Ai() {
     for(let i=0;i<p6.length;i++){ if(/^\d{3}$/.test(String(p6[i]||''))) p6[i] = mixBlock3(p6[i],0.06); }
     const p7 = sampleUniqueAvoid(hn7Map, 4, 9, []); while(p7.length<4) p7.push('—');
     for(let i=0;i<p7.length;i++){ if(/^\d{2}$/.test(String(p7[i]||''))) p7[i] = mixBlock2(p7[i],0.06); }
-    const conf = Math.min(95, Math.max(60, Math.round(56 + (Object.keys(hn6Map).length+Object.keys(hn7Map).length)*1.7 + (Math.random()-0.4)*14)));
-    addRecent('HANOI','prize1', first5||''); addRecent('HANOI','top3', p6); addRecent('HANOI','bottom3', p7); addRecent('HANOI','bottom2', ['—']);
-    return { prize1:first5, top3:p6, bottom3:p7, bottom2:['—'], confidence: conf };
+    const getDiff = (m) => { const e = Object.entries(m).sort((a,b)=>b[1]-a[1]); return (e.length<2)?0:(e[0][1]-e[1][1]); };
+    const d6 = getDiff(hn6Map);
+    const d7 = getDiff(hn7Map);
+    let baseConf = Math.round(64 + d6*20 + d7*16 + (Math.random()-0.45)*12);
+    const pressPenalty = Math.min(9, Math.round(Math.sqrt(aiPressCount)*2));
+    let conf = baseConf - pressPenalty;
+    const minBound = 65 + Math.round(Math.random()*4);
+    conf = Math.min(94, Math.max(minBound, conf));
+    let two1 = '';
+    const pick2 = diversifyPick(hn7Map, 8, pickTemp(1.16), []);
+    if(pick2) two1 = mixBlock2(pick2, 0.06);
+    else two1 = (/^\d{5}$/.test(String(first5_raw||''))) ? String(first5_raw).slice(-2) : String(Math.floor(Math.random()*100)).padStart(2,'0');
+    let guard2 = 0;
+    while(isRecent('HANOI','bottom2', [two1]) && guard2 < 5){
+      const alt = diversifyPick(hn7Map, 10, pickTemp(1.22), []) || String(Math.floor(Math.random()*100)).padStart(2,'0');
+      two1 = mixBlock2(alt, 0.08);
+      guard2++;
+    }
+    addRecent('HANOI','prize1', first5||''); addRecent('HANOI','top3', p6); addRecent('HANOI','bottom3', p7); addRecent('HANOI','bottom2', [two1]);
+    return { prize1:first5, top3:p6, bottom3:p7, bottom2:[two1], confidence: conf };
   }
 
   const insufficientTH = arrFull.length===0;
@@ -1538,14 +1555,22 @@ function runAICalc(){
     document.getElementById('aiSix') && (document.getElementById('aiSix').innerText = results.prize1 || '—');
     document.getElementById('aiTop3') && (document.getElementById('aiTop3').innerText = results.top3.join(', ') || '—');
     document.getElementById('aiBottom3') && (document.getElementById('aiBottom3').innerText = results.bottom3.join(', ') || '—');
-    document.getElementById('aiTwo') && (document.getElementById('aiTwo').innerText = results.bottom2.join(', ') || '—');
+    if(document.getElementById('aiTwo')){
+      const twoTxt = results.bottom2.join(', ');
+      const showTxt = (historyFilter==='HANOI' && (!twoTxt || twoTxt.trim()==='—')) ? '— เลขท้าย 2 ตัวไม่มีผลลัพท์' : (twoTxt || '—');
+      document.getElementById('aiTwo').innerText = showTxt;
+    }
     document.getElementById('aiScore') && (document.getElementById('aiScore').innerText = results.confidence + '%' || '—%');
   }
 
   if(document.getElementById('aiSix_small')) document.getElementById('aiSix_small').innerText = results.prize1 || '—';
   if(document.getElementById('aiTop3_small')) document.getElementById('aiTop3_small').innerText = results.top3.join(', ') || '—';
   if(document.getElementById('aiBottom3_small')) document.getElementById('aiBottom3_small').innerText = results.bottom3.join(', ') || '—';
-  if(document.getElementById('aiTwo_small')) document.getElementById('aiTwo_small').innerText = results.bottom2.join(', ') || '—';
+  if(document.getElementById('aiTwo_small')){
+    const twoTxt = results.bottom2.join(', ');
+    const showTxt = (historyFilter==='HANOI' && (!twoTxt || twoTxt.trim()==='—')) ? '— เลขท้าย 2 ตัวไม่มีผลลัพท์' : (twoTxt || '—');
+    document.getElementById('aiTwo_small').innerText = showTxt;
+  }
   if(document.getElementById('aiScore_small')) document.getElementById('aiScore_small').innerText = results.confidence + '%' || '—%';
   if(document.getElementById('aiScore_center')) document.getElementById('aiScore_center').innerText = results.confidence + '%' || '—%';
 
