@@ -551,6 +551,11 @@ body.bg-moon {
         </div>
       </div>
 <button onclick="runAIwithAura()" class="btn-primary w-full mt-4">ค้นหาเลขเด็ดงวดถัดไป</button>
+      <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <input id="backtestDateInput" type="date" class="input-dd w-full sm:col-span-2" />
+        <button onclick="runBacktest()" class="btn-primary w-full">เช็คความแม่น🎯ย้อนหลัง</button>
+      </div>
+      <div id="backtestResult" class="mt-3"></div>
     </div>
   </div>
 
@@ -1418,6 +1423,214 @@ function runAICalc(){
   const res2 = document.getElementById('aiResult');
   const warn2 = document.getElementById('aiWarning');
   if(!results.insufficient){ if(res2) res2.classList.remove('hidden'); if(warn2) warn2.classList.add('hidden'); }
+}
+function AiFromRecords(records, type){
+  const is3 = s => /^\d{3}$/.test(String(s||''));
+  const is2 = s => /^\d{2}$/.test(String(s||''));
+  const is4 = s => /^\d{4}$/.test(String(s||''));
+  const is5 = s => /^\d{5}$/.test(String(s||''));
+  const arrFull = records.map(r=>String(r.full6||'')).filter(s=>/^\d{6}$/.test(s));
+  const f3Arr = arrFull.map(s=> s.slice(0,3));
+  const l3Arr = arrFull.map(s=> s.slice(3));
+  const lowerArr = [];
+  records.forEach(r=>{ if(is3(r.lower3a)) lowerArr.push(r.lower3a); if(is3(r.lower3b)) lowerArr.push(r.lower3b); });
+  const bottomArr = records.map(r=>r.bottom).filter(v=>is2(v));
+  const lao6Arr = records.map(r=>r.six).filter(v=>/^\d{6}$/.test(String(v||'')));
+  const lao4Arr = records.map(r=>r.last4).filter(v=>is4(v));
+  const lao3Arr = [];
+  records.forEach(r=>{ if(is3(r.last3)) lao3Arr.push(r.last3); if(is4(r.last4)){ const x = String(r.last4).slice(1); if(is3(x)) lao3Arr.push(x); } });
+  const lao2mArr = [];
+  records.forEach(r=> String(r.last2_multi||'').split(',').map(x=>x.trim()).forEach(x=>{ if(is2(x)) lao2mArr.push(x); }));
+  const hn5Arr = records.map(r=>r.first5).filter(v=>is5(v));
+  const hn6Arr = [];
+  records.forEach(r=> String(r.prize6_list||'').split(',').map(x=>x.trim()).forEach(x=>{ if(is3(x)) hn6Arr.push(x); }));
+  const hn7Arr = [];
+  records.forEach(r=> String(r.prize7_list||'').split(',').map(x=>x.trim()).forEach(x=>{ if(is2(x)) hn7Arr.push(x); }));
+
+  const weightedFreq = (arr, decay=0.045) => { const m={}; arr.forEach((v,i)=>{ m[v]=(m[v]||0)+Math.exp(-decay*i); }); return m; };
+  const weightedPick = (m, k=5) => { const entries=Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,k); const total=entries.reduce((s,[,w])=>s+w,0); if(entries.length===0) return ''; if(total<=0) return entries[0][0]; let r=Math.random()*total; for(const [key,w] of entries){ r-=w; if(r<=0) return key; } return entries[0][0]; };
+  const sampleUnique = (m, count=3, k=5) => { const res=[]; const tmp={...m}; for(let i=0;i<count;i++){ const p=weightedPick(tmp,k); if(!p) break; res.push(p); delete tmp[p]; } return res; };
+  const deltaScore = (arr) => { const s={}; arr.forEach((v,i)=>{ const next=arr[i+1]; if(next&&v===next) s[v]=(s[v]||0)+0.25; else s[v]=(s[v]||0)+0.05; }); return s; };
+  const combine = (freqMap, deltaMap) => { const merged={}; Object.keys(freqMap).forEach(k=> merged[k]=(merged[k]||0)+freqMap[k]*0.7+(deltaMap[k]||0)*0.4); Object.keys(deltaMap).forEach(k=>{ if(!merged[k]) merged[k]=(deltaMap[k]||0)*0.4; }); return merged; };
+
+  if(type==='LAO' || type==='ลาว'){
+    const noData = lao6Arr.length===0 && lao4Arr.length===0 && lao3Arr.length===0 && lao2mArr.length===0;
+    if(noData){ return { insufficient:true, warning:'', prize1:'——', top3:['—','—'], bottom3:['—','—','—'], bottom2:['—','—','—','—','—'], confidence:0 }; }
+    const lao6Map = weightedFreq(lao6Arr, 0.04);
+    const lao4Map = weightedFreq(lao4Arr, 0.04);
+    const lao3Map = weightedFreq(lao3Arr, 0.05);
+    const lao2mMap = weightedFreq(lao2mArr, 0.06);
+    let six1 = Object.keys(lao6Map).length ? weightedPick(lao6Map, 10) : '';
+    if(!six1){ const base3 = Object.keys(lao3Map).length ? Object.entries(lao3Map).sort((a,b)=>b[1]-a[1])[0][0] : ''; const rand3 = String(Math.floor(Math.random()*1000)).padStart(3,'0'); six1 = (base3+rand3) || '——'; }
+    const set4 = sampleUnique(lao4Map, 2, 10); while(set4.length<2){ const fb4 = Object.entries(lao4Map).sort((a,b)=>b[1]-a[1]).map(([k])=>k); for(const x of fb4){ if(set4.length>=2) break; if(!set4.includes(x)) set4.push(x); } if(set4.length<2) set4.push('—'); }
+    const set3 = sampleUnique(lao3Map, 3, 10); while(set3.length<3){ const fb3 = Object.entries(lao3Map).sort((a,b)=>b[1]-a[1]).map(([k])=>k); for(const x of fb3){ if(set3.length>=3) break; if(!set3.includes(x)) set3.push(x); } if(set3.length<3) set3.push('—'); }
+    const dev5 = sampleUnique(lao2mMap, 5, 10); let guard=0; while(dev5.length<5 && guard<50){ const pick=weightedPick(lao2mMap,10)||''; if(pick){ if(!dev5.includes(pick)) dev5.push(pick); } else dev5.push('—'); guard++; } while(dev5.length<5) dev5.push('—');
+    const conf = Math.min(96, Math.max(35, Math.round(50 + (Object.keys(lao6Map).length+Object.keys(lao4Map).length+Object.keys(lao3Map).length)*1.5 + (Math.random()-0.5)*12)));
+    return { prize1:six1, top3:set4, bottom3:set3, bottom2:dev5, confidence: conf };
+  }
+  if(type==='HANOI' || type==='ฮานอย'){
+    const noData = hn5Arr.length===0 && hn6Arr.length===0 && hn7Arr.length===0;
+    if(noData){ return { insufficient:true, warning:'', prize1:'——', top3:['—','—','—'], bottom3:['—','—','—','—'], bottom2:['—'], confidence:0 }; }
+    const hn5Map = weightedFreq(hn5Arr, 0.04);
+    const hn6Map = weightedFreq(hn6Arr, 0.05);
+    const hn7Map = weightedFreq(hn7Arr, 0.06);
+    const first5 = Object.keys(hn5Map).length? Object.entries(hn5Map).sort((a,b)=>b[1]-a[1])[0][0] : '—';
+    const p6 = sampleUnique(hn6Map, 3, 8); while(p6.length<3) p6.push('—');
+    const p7 = sampleUnique(hn7Map, 4, 8); while(p7.length<4) p7.push('—');
+    const conf = Math.min(96, Math.max(35, Math.round(50 + (Object.keys(hn6Map).length+Object.keys(hn7Map).length)*1.5 + (Math.random()-0.5)*12)));
+    return { prize1:first5, top3:p6, bottom3:p7, bottom2:['—'], confidence: conf };
+  }
+  const insufficientTH = arrFull.length===0;
+  if(insufficientTH){ return { insufficient:true, warning:'', prize1:'——', top3:['—','—','—'], bottom3:['—','—','—'], bottom2:['—','—','—'], confidence:0 }; }
+  const mapF = weightedFreq(f3Arr, 0.045);
+  const mapL = weightedFreq(l3Arr, 0.045);
+  const deltaF = deltaScore(f3Arr);
+  const deltaL = deltaScore(l3Arr);
+  const combF = combine(mapF, deltaF);
+  const combL = combine(mapL, deltaL);
+  const lowerMap = weightedFreq(lowerArr, 0.05);
+  const bottomMap = weightedFreq(bottomArr, 0.06);
+  let bestF = weightedPick(combF, 8) || '000';
+  let bestL = weightedPick(combL, 8) || '000';
+  let prize1 = (bestF + bestL);
+  if(Math.random() < 0.35){ const d = prize1.split(''); const pos = Math.floor(Math.random()*6); d[pos] = String(Math.floor(Math.random()*10)); prize1 = d.join(''); }
+  if(Math.random() < 0.15){ const n = parseInt(prize1,10) || 0; prize1 = String((n + 1 + Math.floor(Math.random()*97)) % 1000000).padStart(6,'0'); }
+  if(Math.random() < 0.02){ const n = parseInt(prize1,10) || 0; prize1 = String((n + Math.floor(Math.random()*37)) % 1000000).padStart(6,'0'); }
+  const bottom3 = sampleUnique(lowerMap, 3, 8); if(bottom3.length < 3){ const fb = Object.entries(lowerMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k); for(const x of fb){ if(bottom3.length>=3) break; if(!bottom3.includes(x)) bottom3.push(x); } } while(bottom3.length < 3) bottom3.push('—');
+  const bottom2 = sampleUnique(bottomMap, 3, 8); if(bottom2.length < 3){ const fb2 = Object.entries(bottomMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k); for(const x of fb2){ if(bottom2.length>=3) break; if(!bottom2.includes(x)) bottom2.push(x); } } while(bottom2.length < 3) bottom2.push('—');
+  const top3 = sampleUnique(combL, 3, 5);
+  const calcConf = (map) => { const entries = Object.entries(map).sort((a,b)=>b[1]-a[1]); if(entries.length < 2) return 60; const diff = entries[0][1] - entries[1][1]; const s = Math.min(96, Math.max(35, Math.round(50 + diff * 30))); return s; };
+  let confidence = Math.round((calcConf(mapF) + calcConf(mapL)) / 2);
+  const jitter = Math.round((Math.random() - 0.5) * 12);
+  confidence = Math.min(96, Math.max(35, confidence + jitter));
+  return { prize1, top3, bottom3, bottom2, confidence };
+}
+
+function runBacktest(){
+  const el = document.getElementById('backtestDateInput');
+  const out = document.getElementById('backtestResult');
+  if(!el || !out) return;
+  const v = (el.value||'').trim();
+  if(!v){ out.innerHTML = '<div class="text-white/70">กรุณาใส่วันที่</div>'; return; }
+  const d = v.replace(/-/g,'');
+  const tSel = historyFilter;
+  const foundAny = allData.find(r=> String(r.date)===d && (
+    tSel==='TH' ? (r.type==='TH' || r.type==='ไทย') :
+    tSel==='LAO' ? (r.type==='LAO' || r.type==='ลาว') :
+    tSel==='HANOI' ? (r.type==='HANOI' || r.type==='ฮานอย') : true
+  ));
+  if(!foundAny){ out.innerHTML = '<div class="text-white/70">เพิ่มข้อมูลหวยจริงก่อนตรวจสอบนะครับ😜</div>'; return; }
+  const norm = (x)=>{ const s = String(x||'').trim(); if(s==='TH' || s==='ไทย') return 'TH'; if(s==='LAO' || s==='ลาว') return 'LAO'; if(s==='HANOI' || s==='ฮานอย') return 'HANOI'; return 'TH'; };
+  const t = (tSel==='TH' || tSel==='LAO' || tSel==='HANOI') ? tSel : norm(foundAny.type);
+  const found = allData.find(r=> String(r.date)===d && (
+    t==='TH' ? (r.type==='TH' || r.type==='ไทย') :
+    t==='LAO' ? (r.type==='LAO' || r.type==='ลาว') :
+    t==='HANOI' ? (r.type==='HANOI' || r.type==='ฮานอย') : true
+  )) || foundAny;
+  const hist = allData.filter(r=> String(r.date) < d && (
+    t==='TH' ? (r.type==='TH' || r.type==='ไทย') :
+    t==='LAO' ? (r.type==='LAO' || r.type==='ลาว') :
+    t==='HANOI' ? (r.type==='HANOI' || r.type==='ฮานอย') : true
+  ));
+  const results = AiFromRecords(hist, t);
+  const showArr = arr => (arr||[]).filter(Boolean).join(', ');
+  let gen1 = results.prize1||'—';
+  let real1 = '—';
+  let genTop = showArr(results.top3);
+  let realTop = '—';
+  let genBottom3 = showArr(results.bottom3);
+  let realBottom3 = '—';
+  let genBottom2 = showArr(results.bottom2);
+  let realBottom2 = '—';
+  if(t==='TH'){
+    real1 = String(found.full6||'').trim() || '—';
+    const f6 = String(found.full6||'').trim();
+    realTop = (/^\d{6}$/.test(f6)) ? f6.slice(-3) : '—';
+    realBottom3 = [found.lower3a, found.lower3b].filter(x=>/^\d{3}$/.test(String(x||''))).join(', ') || '—';
+    realBottom2 = String(found.bottom||'').trim() || '—';
+  } else if(t==='LAO'){
+    real1 = String(found.six||found.last4||'').trim() || '—';
+    realTop = String(found.last4||'').trim() || '—';
+    realBottom3 = String(found.last3|| (found.last4?String(found.last4).slice(1):'') ).trim() || '—';
+    realBottom2 = String(found.last2_multi||'').trim() || '—';
+  } else if(t==='HANOI'){
+    real1 = String(found.first5||'').trim() || '—';
+    realTop = String(found.prize6_list||'').trim() || '—';
+    realBottom3 = String(found.prize7_list||'').trim() || '—';
+    realBottom2 = '—';
+  }
+  if(real1==='—' && realTop==='—' && realBottom3==='—' && realBottom2==='—'){
+    if(t==='TH'){
+      const el = document.querySelector(`#historyList .result-card[data-date="${d}"][data-type="TH"]`) || document.querySelector(`#historyList .result-card[data-date="${d}"][data-type="ไทย"]`);
+      if(el){
+        const f6 = el.getAttribute('data-full6')||'';
+        const l3a = el.getAttribute('data-lower3a')||'';
+        const l3b = el.getAttribute('data-lower3b')||'';
+        const b2 = el.getAttribute('data-bottom')||'';
+        real1 = f6||'—';
+        realTop = (/^\d{6}$/.test(String(f6))) ? String(f6).slice(-3) : '—';
+        const arr3 = [l3a,l3b].filter(x=>/^\d{3}$/.test(String(x||'')));
+        realBottom3 = arr3.join(', ') || '—';
+        realBottom2 = (/^\d{2}$/.test(String(b2||''))) ? String(b2) : '—';
+      }
+    } else if(t==='LAO'){
+      const el = document.querySelector(`#historyList .result-card[data-date="${d}"][data-type="LAO"]`) || document.querySelector(`#historyList .result-card[data-date="${d}"][data-type="ลาว"]`);
+      if(el){
+        const six = el.getAttribute('data-six')||'';
+        const last4 = el.getAttribute('data-last4')||'';
+        const last3 = el.getAttribute('data-last3')||'';
+        const l2m = el.getAttribute('data-last2multi')||'';
+        real1 = (six||last4)||'—';
+        realTop = last4||'—';
+        realBottom3 = (last3 || (last4? String(last4).slice(1): '')) || '—';
+        realBottom2 = l2m||'—';
+      }
+    } else if(t==='HANOI'){
+      const el = document.querySelector(`#historyList .result-card[data-date="${d}"][data-type="HANOI"]`) || document.querySelector(`#historyList .result-card[data-date="${d}"][data-type="ฮานอย"]`);
+      if(el){
+        const f5 = el.getAttribute('data-first5')||'';
+        const p6 = el.getAttribute('data-prize6')||'';
+        const p7 = el.getAttribute('data-prize7')||'';
+        real1 = f5||'—';
+        realTop = p6||'—';
+        realBottom3 = p7||'—';
+        realBottom2 = '—';
+      }
+    }
+  }
+  let labelTop = '🎯 เลขท้ายรางวัลที่ 1';
+  let labelB3 = '🎲 เลขท้าย 3 ตัว';
+  let labelB2 = '✨ เลขท้าย 2 ตัว';
+  if(t==='LAO'){
+    labelTop = '🎯 เลข 4 ตัว (x2)';
+    labelB3 = '🎲 เลข 3 ตัว (x3)';
+    labelB2 = '✨ ลาวพัฒนา (2 หลัก x5)';
+  } else if(t==='HANOI'){
+    labelTop = '🎯 รางวัลที่ 6 (3 หลัก x3)';
+    labelB3 = '🎲 รางวัลที่ 7 (2 หลัก x4)';
+    labelB2 = '✨ เลขท้าย 2 ตัว';
+  }
+  const score = (results.confidence||0)+'%';
+  const typeLabel = (t==='TH') ? '🇹🇭 ไทย' : (t==='LAO') ? '🇱🇦 ลาว' : (t==='HANOI') ? '🇻🇳 ฮานอย' : String(t);
+  out.innerHTML = `
+    <div class="card p-3">
+      <div class="text-white/80 text-sm">วันที่: ${v} • ประเภท: ${typeLabel}</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 text-sm">
+        <div class="text-white/80"><div class="muted">ผล AI</div>
+          <div>🏆 ${gen1}</div>
+          <div>${labelTop}: ${genTop||'—'}</div>
+          <div>${labelB3}: ${genBottom3||'—'}</div>
+          <div>${labelB2}: ${genBottom2||'—'}</div>
+          <div>ความมั่นใจ: ${score}</div>
+        </div>
+        <div class="text-white/80"><div class="muted">ผลจริง</div>
+          <div>🏆 ${real1}</div>
+          <div>${labelTop}: ${realTop||'—'}</div>
+          <div>${labelB3}: ${realBottom3||'—'}</div>
+          <div>${labelB2}: ${realBottom2||'—'}</div>
+        </div>
+      </div>
+    </div>`;
 }
 
 /* ============================
