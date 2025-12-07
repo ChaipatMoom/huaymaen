@@ -387,12 +387,12 @@ body.bg-moon {
       <h1 class="text-3xl font-bold mb-2">✨ ยินดีต้อนรับ ✨</h1>
       <p class="text-white/70 mb-6">
         สู่ระบบวิเคราะห์ตัวเลขด้วย AI <br>
-        รุ่น Lucky Aura — Ensemble by Chaipat
+        รุ่น Lucky Aura — hybrid-calculate algorithm by Chaipat
       </p>
 
       <div class="text-left mb-6 space-y-2 text-white/80">
-        <div>🔮 วิเคราะห์รางวัลที่ 1 แบบ Ensemble Boost</div>
-        <div>📊 สถิติคำนวณเลขท้าย แบบความถี่ลับ</div>
+        <div>🔮 วิเคราะห์รางวัลที่ 1 แบบ hybrid-calculate Boost</div>
+        <div>📊 สถิติคำนวณเลขท้าย แบบความถี่ลับสุดยอด</div>
         <div>🎲 Lucky 2 ตัว / 3 ตัว พร้อม % ความมั่นใจ</div>
         <div>🏆 ทำงานอัตโนมัติหลังบันทึกผลรางวัล</div>
       </div>
@@ -405,7 +405,7 @@ body.bg-moon {
   <div id="addModal" class="modal hidden">
     <div class="modal-aura max-w-md w-full p-6 text-white">
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">🧪 เพิ่มผลรางวัลใหม่</h2>
+        <h2 id="addModalTitle" class="text-xl font-bold">🧪 เพิ่มผลรางวัลใหม่</h2>
         <button onclick="closeAddModal()" class="text-red-300 text-lg">✕</button>
       </div>
 
@@ -493,7 +493,7 @@ body.bg-moon {
       </div>
       <div>
         <div class="text-lg sm:text-xl font-bold text-gold">AI ให้หวยแม่นๆ</div>
-        <div class="muted text-xs">Ai · Ensemble by Chaipat</div>
+        <div class="muted text-xs">Ai · hybrid-calculate algorithm by Chaipat</div>
       </div>
     </div>
 
@@ -617,10 +617,12 @@ body.bg-moon {
 
         <div>
           <h2 class="text-xl font-bold text-white">🗂️ ผลรางวัลย้อนหลัง</h2>
-          <div class="text-xs text-white/60">แสดงล่าสุด 12 งวด</div>
+          <div class="text-xs text-white/60">แสดงผลตามปีที่เลือก</div>
         </div>
 
-        
+        <div class="flex items-center gap-2">
+          <select id="yearFilter" class="input-dd" onchange="setYearFilter(this.value)"></select>
+        </div>
 
       </div>
 
@@ -686,6 +688,7 @@ db.on('value', (snap) => {
 
   }
 
+  populateYearFilter();
   renderHistory();
 
   updateStats();
@@ -699,9 +702,12 @@ db.on('value', (snap) => {
 
    ============================ */
 
-let allData = [];          // raw data from firebase
-let historyFilter = 'all'; // 'all'|'ไทย'|'ลาว'|'ฮานอย'
+let allData = [];
+let historyFilter = 'all';
+let yearFilter = 'all';
 let pieChart = null;
+let aiPressCount = 0;
+let recentAi = { TH:{prize1:[], top3:[], bottom3:[], bottom2:[]}, LAO:{prize1:[], top3:[], bottom3:[], bottom2:[]}, HANOI:{prize1:[], top3:[], bottom3:[], bottom2:[]} };
 
 let addType = 'TH';
 function setAddType(t){
@@ -729,10 +735,41 @@ function typeToLabel(t){
   if(t==='HANOI') return 'ฮานอย';
   return t;
 }
+function normalizeType(t){
+  const s = String(t||'').trim();
+  if(s==='ไทย' || s==='TH') return 'TH';
+  if(s==='ลาว' || s==='LAO') return 'LAO';
+  if(s==='ฮานอย' || s==='HANOI') return 'HANOI';
+  return s;
+}
+
+function setYearFilter(y){
+  yearFilter = y || 'all';
+  renderHistory();
+}
+
+function populateYearFilter(){
+  const sel = document.getElementById('yearFilter');
+  if(!sel) return;
+  const years = Array.from(new Set(allData.map(r=>String(r.date||'').slice(0,4)))).filter(Boolean).sort((a,b)=> b.localeCompare(a));
+  const current = yearFilter;
+  const opts = ['<option value="all">ทุกปี</option>'].concat(years.map(y=>`<option value="${y}">${y}</option>`)).join('');
+  sel.innerHTML = opts;
+  sel.value = current || 'all';
+}
 
 /* ======= small utils ======= */
 const pad = (s,n=2)=>String(s||'').padStart(n,'0');
 const isDigits = s => /^\d+$/.test(String(s||''));
+function pickTemp(base=1.18){ const inc = Math.min(0.5, aiPressCount*0.04); return base + inc; }
+function mixDigits(s,len,spice=0){ let d = String(s||'').padStart(len,'0').slice(-len).split(''); if(Math.random() < 0.3+spice){ const i=Math.floor(Math.random()*len); d[i]=String((parseInt(d[i],10)+1)%10); } if(Math.random() < 0.2+spice){ const i=Math.floor(Math.random()*len); const j=Math.floor(Math.random()*len); if(i!==j){ [d[i],d[j]]=[d[j],d[i]]; } } if(Math.random() < 0.15+spice){ d.push(d.shift()); } return d.join(''); }
+function mixBlock3(s, spice=0){ s = String(s||'').padStart(3,'0').slice(-3); let d=s.split(''); if(Math.random() < 0.33+spice) { const i=Math.floor(Math.random()*3); d[i]=String((parseInt(d[i],10)+1)%10); } if(Math.random() < 0.22+spice) { [d[0],d[1],d[2]] = [d[1],d[2],d[0]]; } if(Math.random() < 0.18+spice) { const i=Math.floor(Math.random()*3); const j=(i+1)%3; [d[i], d[j]]=[d[j], d[i]]; } return d.join(''); }
+function mixBlock2(s, spice=0){ s=String(s||'').padStart(2,'0').slice(-2); let d=s.split(''); if(Math.random() < 0.38+spice) { const i=Math.floor(Math.random()*2); d[i]=String((parseInt(d[i],10)+1)%10); } if(Math.random() < 0.18+spice) { d.reverse(); } return d.join(''); }
+function mixPrize1(f,l, spice=0){ let d=(String(f||'').padStart(3,'0').slice(-3) + String(l||'').padStart(3,'0').slice(-3)).split(''); if(Math.random() < 0.28+spice) { const i=Math.floor(Math.random()*6); d[i]=String((parseInt(d[i],10)+Math.floor(Math.random()*3))%10); } if(Math.random() < 0.16+spice) { const a=Math.floor(Math.random()*6), b=Math.floor(Math.random()*6); [d[a],d[b]]=[d[b],d[a]]; } if(Math.random() < 0.12+spice){ d=[d[3],d[4],d[5],d[0],d[1],d[2]]; } return d.join(''); }
+function addRecent(t,key,vals){ const store = recentAi[t]; if(!store) return; const v = Array.isArray(vals)? vals.join('|') : String(vals||''); store[key].unshift(v); if(store[key].length>6) store[key].pop(); }
+function isRecent(t,key,vals){ const store = recentAi[t]; if(!store) return false; const v = Array.isArray(vals)? vals.join('|') : String(vals||''); return store[key].includes(v); }
+function diversifyPick(m,k=8,temperature=1.15,avoidList=[]){ const entries = Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,k); if(entries.length===0) return ''; let weights = entries.map(([n,w])=>[n,Math.pow(w,1/temperature)]); weights = weights.filter(([n])=> !avoidList.includes(n)); if(weights.length===0) weights = entries.map(([n])=>[n,1]); const total = weights.reduce((s,[,w])=>s+w,0); let r = Math.random()*total; for(const [n,w] of weights){ r-=w; if(r<=0) return n; } return weights[0][0]; }
+function sampleUniqueAvoid(m,count=3,k=8,avoidSet=[]){ const res=[]; const tmp={...m}; let guard=0; while(res.length<count && guard<200){ const p = diversifyPick(tmp,k,pickTemp(1.12),avoidSet); if(!p) break; if(!res.includes(p)){ res.push(p); delete tmp[p]; } guard++; } return res; }
 
 /* ============================
    ONBOARDING (open once)
@@ -810,6 +847,7 @@ function chooseType(t){
   updateAIViewForType(t);
   clearAIViews();
   setHeaderTypeActive(t);
+  aiPressCount = 0;
   renderHistory();
   updateStats();
 }
@@ -831,12 +869,70 @@ function openAddModal(){
   const t = (historyFilter && historyFilter!=='all') ? historyFilter : addType;
   setAddType(t);
 }
+function openEditModal(d, t){
+  document.getElementById('addModal').classList.remove('hidden');
+  const ttl = document.getElementById('addModalTitle'); if(ttl) ttl.innerText = 'แก้ไขผลรางวัล';
+  let tt = normalizeType(t);
+  setAddType(tt);
+  const candidates = allData.filter(x=> String(x.date)===String(d) && normalizeType(x.type)===tt);
+  let r = null;
+  if(candidates.length>0){
+    const is3 = s => /^\d{3}$/.test(String(s||''));
+    const is2 = s => /^\d{2}$/.test(String(s||''));
+    const is4 = s => /^\d{4}$/.test(String(s||''));
+    const is5 = s => /^\d{5}$/.test(String(s||''));
+    let best = null; let bestScore = -1;
+    candidates.forEach(o=>{
+      const score = (String(o.full6||'').length===6?1:0)
+        + (is3(o.lower3a)?1:0) + (is3(o.lower3b)?1:0) + (is2(o.bottom)?1:0)
+        + (is4(o.last4)?1:0) + (is3(o.last3)?1:0)
+        + ((String(o.last2_multi||'').split(',').map(x=>x.trim()).filter(x=>is2(x)).length>0)?1:0)
+        + (is5(o.first5)?1:0)
+        + ((String(o.prize6_list||'').split(',').map(x=>x.trim()).filter(x=>is3(x)).length>=3)?1:0)
+        + ((String(o.prize7_list||'').split(',').map(x=>x.trim()).filter(x=>is2(x)).length>=4)?1:0);
+      if(score>bestScore){ bestScore=score; best=o; }
+    });
+    r = best;
+  }
+  const di = document.getElementById('dateInput'); if(di) di.value = `${String(d).slice(0,4)}-${String(d).slice(4,6)}-${String(d).slice(6,8)}`;
+  if(r){
+    if(tt==='TH'){
+      const a = document.getElementById('firstPrizeInput'); if(a) a.value = r.full6||'';
+      const b = document.getElementById('threeBottomAInput'); if(b) b.value = r.lower3a||'';
+      const c = document.getElementById('threeBottomBInput'); if(c) c.value = r.lower3b||'';
+      const d2 = document.getElementById('twoBottomInput'); if(d2) d2.value = r.bottom||'';
+    } else if(tt==='LAO'){
+      const a = document.getElementById('laoSixInput'); if(a) a.value = r.six||'';
+      const b = document.getElementById('laoLast4Input'); if(b) b.value = r.last4||'';
+      const c = document.getElementById('laoLast3Input'); if(c) c.value = r.last3|| (r.last4?String(r.last4).slice(1):'');
+      const d3 = document.getElementById('laoLast2MultiInput'); if(d3) d3.value = r.last2_multi||'';
+    } else if(tt==='HANOI'){
+      const a = document.getElementById('hnFirst5Input'); if(a) a.value = r.first5||'';
+      const b = document.getElementById('hnPrize6Input'); if(b) b.value = r.prize6_list||'';
+      const c = document.getElementById('hnPrize7Input'); if(c) c.value = r.prize7_list||'';
+    }
+  }
+}
 function closeAddModal(){
   document.getElementById('addModal').classList.add('hidden');
+  const ttl = document.getElementById('addModalTitle'); if(ttl) ttl.innerText = '🧪 เพิ่มผลรางวัลใหม่';
   // clear fields
   const ids = ['dateInput','firstPrizeInput','threeBottomAInput','threeBottomBInput','twoBottomInput','laoSixInput','laoLast4Input','laoLast3Input','laoLast2MultiInput','hnFirst5Input','hnPrize6Input','hnPrize7Input'];
   ids.forEach(id=>{ const el = document.getElementById(id); if(el) el.value=''; });
   setAddType('TH');
+}
+
+async function deleteResult(d, t){
+  const tt = normalizeType(t);
+  const typeLabel = typeToLabel(tt);
+  const dateFmt = `${String(d).slice(6,8)}/${String(d).slice(4,6)}/${String(d).slice(0,4)}`;
+  const ok = confirm(`ยืนยันการลบข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateFmt}`);
+  if(!ok) return;
+  try {
+    await db.child(String(d)).remove();
+  } catch (error) {
+    alert('เกิดข้อผิดพลาดในการลบข้อมูล: ' + error.message + '. กรุณาตรวจสอบการเชื่อมต่อหรือสิทธิ์ใน Firebase.');
+  }
 }
 
 /* ============================
@@ -967,7 +1063,7 @@ function renderHistory(){
 
   const byKey = new Map();
   arr.forEach(r => {
-    const key = r.date + '|' + r.type;
+    const key = r.date + '|' + normalizeType(r.type);
     const score = (String(r.full6||'').length===6?1:0)
       + (is3(r.lower3a)?1:0) + (is3(r.lower3b)?1:0) + (is2(r.bottom)?1:0)
       + (is4(r.last4)?1:0) + (is3(r.last3)?1:0) + (is2(r.last2)?1:0)
@@ -991,7 +1087,9 @@ function renderHistory(){
     });
   }
 
-  arr = arr.slice(0, 12);
+  if(yearFilter && yearFilter !== 'all'){
+    arr = arr.filter(r => String(r.date||'').slice(0,4) === yearFilter);
+  }
 
   if(arr.length === 0){
     box.innerHTML = `<div class="text-white/60 p-4">ยังไม่มีข้อมูล</div>`;
@@ -1007,7 +1105,11 @@ function renderHistory(){
       <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-full6="${r.full6||''}" data-lower3a="${r.lower3a||''}" data-lower3b="${r.lower3b||''}" data-bottom="${r.bottom||''}">
         <div class="flex justify-between items-start mb-3">
           <div class="text-sm text-white/70">${flag} <span class="font-semibold ml-1">${typeLabel}</span></div>
-          <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
+            <button onclick="openEditModal('${r.date}','${r.type}')" class="text-blue-300 text-xs">แก้ไข</button>
+            <button onclick="deleteResult('${r.date}','${r.type}')" class="text-red-300 text-xs">ลบ</button>
+          </div>
         </div>
         <div class="text-2xl font-extrabold mb-2">🏆 ${r.full6||'—'}</div>
         <div class="grid grid-cols-3 gap-2 text-sm">
@@ -1034,7 +1136,11 @@ function renderHistory(){
       <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-six="${r.six||''}" data-last4="${r.last4||''}" data-last3="${r.last3||''}" data-last2multi="${r.last2_multi||''}">
         <div class="flex justify-between items-start mb-3">
           <div class="text-sm text-white/70">${flag} <span class="font-semibold ml-1">${typeLabel}</span></div>
-          <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
+            <button onclick="openEditModal('${r.date}','${r.type}')" class="text-blue-300 text-xs">แก้ไข</button>
+            <button onclick="deleteResult('${r.date}','${r.type}')" class="text-red-300 text-xs">ลบ</button>
+          </div>
         </div>
         <div class="text-2xl font-extrabold mb-2">🏆 ${r.six||r.last4||'—'}</div>
         <div class="grid grid-cols-3 gap-2 text-sm">
@@ -1061,7 +1167,11 @@ function renderHistory(){
       <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-first5="${r.first5||''}" data-prize6="${r.prize6_list||''}" data-prize7="${r.prize7_list||''}">
         <div class="flex justify-between items-start mb-3">
           <div class="text-sm text-white/70">${flag} <span class="font-semibold ml-1">${typeLabel}</span></div>
-          <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-yellow-300">📅 ${dateFmt}</div>
+            <button onclick="openEditModal('${r.date}','${r.type}')" class="text-blue-300 text-xs">แก้ไข</button>
+            <button onclick="deleteResult('${r.date}','${r.type}')" class="text-red-300 text-xs">ลบ</button>
+          </div>
         </div>
         <div class="text-2xl font-extrabold mb-2">🏆 ${r.first5||'—'}</div>
         <div class="grid grid-cols-3 gap-2 text-sm">
@@ -1163,6 +1273,7 @@ function runAIwithAura(){
   if(warn) warn.classList.add('hidden');
 
   // give the aura animation time
+  aiPressCount++;
   setTimeout(()=>{
     runAICalc();
     // small aura flash
@@ -1304,43 +1415,48 @@ function Ai() {
       const msg = `🇱🇦⚠️ ผลรางวัลย้อนหลังไม่เพียงพอ กรุณาเพิ่มผลรางวัล เพื่อ Ai จะได้ประมวลผลเลขเด็ดๆให้ ครับ`;
       return { insufficient: true, warning: msg, prize1: '——', top3: ['—','—'], bottom3: ['—','—','—'], bottom2: ['—','—','—','—','—'], confidence: 0 };
     }
-    const lao6Map = weightedFreq(lao6Arr, 0.04);
-    const lao4Map = weightedFreq(lao4Arr, 0.04);
-    const lao3Map = weightedFreq(lao3Arr, 0.05);
-    const lao2mMap = weightedFreq(lao2mArr, 0.06);
+    const lao6Map = weightedFreq(lao6Arr, 0.042);
+    const lao4Map = weightedFreq(lao4Arr, 0.042);
+    const lao3Map = weightedFreq(lao3Arr, 0.052);
+    const lao2mMap = weightedFreq(lao2mArr, 0.062);
 
-    let six1 = Object.keys(lao6Map).length ? weightedPick(lao6Map, 10) : '';
+    let six1 = Object.keys(lao6Map).length ? diversifyPick(lao6Map, 10, pickTemp(1.18), []) : '';
     if(!six1){
-      const base3 = Object.keys(lao3Map).length ? Object.entries(lao3Map).sort((a,b)=>b[1]-a[1])[0][0] : '';
+      const base3 = Object.keys(lao3Map).length ? diversifyPick(lao3Map, 8, pickTemp(1.2), []) : '';
       const rand3 = String(Math.floor(Math.random()*1000)).padStart(3,'0');
       six1 = (base3+rand3) || '——';
     }
+    if(/^\d{6}$/.test(String(six1||''))) { six1 = mixDigits(six1, 6, 0.08); }
 
-    const set4 = sampleUnique(lao4Map, 2, 10);
+    const set4 = sampleUniqueAvoid(lao4Map, 2, 10, []);
     while(set4.length<2){
       const fb4 = Object.entries(lao4Map).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
       for(const x of fb4){ if(set4.length>=2) break; if(!set4.includes(x)) set4.push(x); }
       if(set4.length<2) set4.push('—');
     }
+    for(let i=0;i<set4.length;i++){ if(/^\d{4}$/.test(String(set4[i]||''))) set4[i] = mixDigits(set4[i],4,0.06); }
 
-    const set3 = sampleUnique(lao3Map, 3, 10);
+    const set3 = sampleUniqueAvoid(lao3Map, 3, 10, []);
     while(set3.length<3){
       const fb3 = Object.entries(lao3Map).sort((a,b)=>b[1]-a[1]).map(([k])=>k);
       for(const x of fb3){ if(set3.length>=3) break; if(!set3.includes(x)) set3.push(x); }
       if(set3.length<3) set3.push('—');
     }
+    for(let i=0;i<set3.length;i++){ if(/^\d{3}$/.test(String(set3[i]||''))) set3[i] = mixBlock3(set3[i],0.06); }
 
-    const dev5 = sampleUnique(lao2mMap, 5, 10);
+    const dev5 = sampleUniqueAvoid(lao2mMap, 5, 10, []);
     let guard = 0;
     while(dev5.length<5 && guard<50){
-      const pick = weightedPick(lao2mMap, 10) || '';
+      const pick = diversifyPick(lao2mMap, 10, pickTemp(1.15), []) || '';
       if(pick){ if(!dev5.includes(pick)) dev5.push(pick); }
       else dev5.push('—');
       guard++;
     }
     while(dev5.length<5) dev5.push('—');
+    for(let i=0;i<dev5.length;i++){ if(/^\d{2}$/.test(String(dev5[i]||''))) dev5[i] = mixBlock2(dev5[i],0.06); }
 
-    const conf = Math.min(96, Math.max(35, Math.round(50 + (Object.keys(lao6Map).length+Object.keys(lao4Map).length+Object.keys(lao3Map).length)*1.5 + (Math.random()-0.5)*12)));
+    const conf = Math.min(95, Math.max(60, Math.round(56 + (Object.keys(lao6Map).length+Object.keys(lao4Map).length+Object.keys(lao3Map).length)*1.7 + (Math.random()-0.4)*14)));
+    addRecent('LAO','prize1', six1||''); addRecent('LAO','top3', set4); addRecent('LAO','bottom3', set3); addRecent('LAO','bottom2', dev5);
     return { prize1:six1, top3:set4, bottom3:set3, bottom2:dev5, confidence: conf };
   }
 
@@ -1350,13 +1466,18 @@ function Ai() {
       const msg = `🇻🇳⚠️ ผลรางวัลย้อนหลังไม่เพียงพอ กรุณาเพิ่มผลรางวัล เพื่อ Ai จะได้ประมวลผลเลขเด็ดๆให้ ครับ`;
       return { insufficient: true, warning: msg, prize1: '——', top3: ['—','—','—'], bottom3: ['—','—','—','—'], bottom2: ['—'], confidence: 0 };
     }
-    const hn5Map = weightedFreq(hn5Arr, 0.04);
-    const hn6Map = weightedFreq(hn6Arr, 0.05);
-    const hn7Map = weightedFreq(hn7Arr, 0.06);
-    const first5 = Object.keys(hn5Map).length? Object.entries(hn5Map).sort((a,b)=>b[1]-a[1])[0][0] : '—';
-    const p6 = sampleUnique(hn6Map, 3, 8); while(p6.length<3) p6.push('—');
-    const p7 = sampleUnique(hn7Map, 4, 8); while(p7.length<4) p7.push('—');
-    const conf = Math.min(96, Math.max(35, Math.round(50 + (Object.keys(hn6Map).length+Object.keys(hn7Map).length)*1.5 + (Math.random()-0.5)*12)));
+    const hn5Map = weightedFreq(hn5Arr, 0.042);
+    const hn6Map = weightedFreq(hn6Arr, 0.052);
+    const hn7Map = weightedFreq(hn7Arr, 0.062);
+    const first5_raw = Object.keys(hn5Map).length? diversifyPick(hn5Map, 8, pickTemp(1.18), []) : '—';
+    let first5 = first5_raw;
+    if(/^\d{5}$/.test(String(first5||''))) { first5 = mixDigits(first5,5,0.08); }
+    const p6 = sampleUniqueAvoid(hn6Map, 3, 9, []); while(p6.length<3) p6.push('—');
+    for(let i=0;i<p6.length;i++){ if(/^\d{3}$/.test(String(p6[i]||''))) p6[i] = mixBlock3(p6[i],0.06); }
+    const p7 = sampleUniqueAvoid(hn7Map, 4, 9, []); while(p7.length<4) p7.push('—');
+    for(let i=0;i<p7.length;i++){ if(/^\d{2}$/.test(String(p7[i]||''))) p7[i] = mixBlock2(p7[i],0.06); }
+    const conf = Math.min(95, Math.max(60, Math.round(56 + (Object.keys(hn6Map).length+Object.keys(hn7Map).length)*1.7 + (Math.random()-0.4)*14)));
+    addRecent('HANOI','prize1', first5||''); addRecent('HANOI','top3', p6); addRecent('HANOI','bottom3', p7); addRecent('HANOI','bottom2', ['—']);
     return { prize1:first5, top3:p6, bottom3:p7, bottom2:['—'], confidence: conf };
   }
 
@@ -1365,32 +1486,34 @@ function Ai() {
     const msg = `🇹🇭⚠️ ผลรางวัลย้อนหลังไม่เพียงพอ กรุณาเพิ่มผลรางวัล เพื่อ Ai จะได้ประมวลผลเลขเด็ดๆให้ ครับ`;
     return { insufficient: true, warning: msg, prize1: '——', top3: ['—','—','—'], bottom3: ['—','—','—'], bottom2: ['—','—','—'], confidence: 0 };
   }
-  let bestF = weightedPick(combF, 8) || '000';
-  let bestL = weightedPick(combL, 8) || '000';
-  let prize1 = (bestF + bestL);
-  if(Math.random() < 0.35){ const d = prize1.split(''); const pos = Math.floor(Math.random()*6); d[pos] = String(Math.floor(Math.random()*10)); prize1 = d.join(''); }
-  if(Math.random() < 0.15){ const n = parseInt(prize1,10) || 0; prize1 = String((n + 1 + Math.floor(Math.random()*97)) % 1000000).padStart(6,'0'); }
-  if(Math.random() < 0.02){ const n = parseInt(prize1,10) || 0; prize1 = String((n + Math.floor(Math.random()*37)) % 1000000).padStart(6,'0'); }
-  const bottom3 = sampleUnique(lowerMap, 3, 8);
+  let bestF = diversifyPick(combF, 10, pickTemp(1.2), [] ) || '000';
+  let bestL = diversifyPick(combL, 10, pickTemp(1.2), [] ) || '000';
+  let prize1 = mixPrize1(bestF, bestL, 0.08);
+  let tguard = 0;
+  while(isRecent('TH','prize1', prize1) && tguard<5){ bestF = diversifyPick(combF, 10, pickTemp(1.25), [] ) || bestF; bestL = diversifyPick(combL, 10, pickTemp(1.25), [] ) || bestL; prize1 = mixPrize1(bestF, bestL, 0.08); tguard++; }
+  if(Math.random() < 0.33){ const d = prize1.split(''); const pos = Math.floor(Math.random()*6); d[pos] = String(Math.floor(Math.random()*10)); prize1 = d.join(''); }
+  if(Math.random() < 0.12){ const n = parseInt(prize1,10) || 0; prize1 = String((n + 1 + Math.floor(Math.random()*97)) % 1000000).padStart(6,'0'); }
+  if(Math.random() < 0.03){ const n = parseInt(prize1,10) || 0; prize1 = String((n + Math.floor(Math.random()*37)) % 1000000).padStart(6,'0'); }
+  const bottom3 = sampleUniqueAvoid(lowerMap, 3, 9, []);
   if(bottom3.length < 3){ const fb = Object.entries(lowerMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k); for(const x of fb){ if(bottom3.length>=3) break; if(!bottom3.includes(x)) bottom3.push(x); } }
   while(bottom3.length < 3) bottom3.push('—');
-  const bottom2 = sampleUnique(bottomMap, 3, 8);
+  const bottom2 = sampleUniqueAvoid(bottomMap, 3, 9, []);
   if(bottom2.length < 3){ const fb2 = Object.entries(bottomMap).sort((a,b)=>b[1]-a[1]).map(([k])=>k); for(const x of fb2){ if(bottom2.length>=3) break; if(!bottom2.includes(x)) bottom2.push(x); } }
   while(bottom2.length < 3) bottom2.push('—');
-  const top3 = sampleUnique(combL, 3, 5);
+  const top3 = sampleUniqueAvoid(combL, 3, 8, []);
 
   // confidence: based on gap between top and second for f3 and l3
   const calcConf = (map) => {
     const entries = Object.entries(map).sort((a,b)=>b[1]-a[1]);
-    if(entries.length < 2) return 60;
+    if(entries.length < 2) return 68;
     const diff = entries[0][1] - entries[1][1];
-    const s = Math.min(96, Math.max(35, Math.round(50 + diff * 30)));
+    const s = Math.min(95, Math.max(68, Math.round(58 + diff * 28)));
     return s;
   };
   let confidence = Math.round((calcConf(mapF) + calcConf(mapL)) / 2);
-  const jitter = Math.round((Math.random() - 0.5) * 12);
-  confidence = Math.min(96, Math.max(35, confidence + jitter));
-
+  const jitter = Math.round((Math.random() - 0.4) * 14);
+  confidence = Math.min(95, Math.max(68, confidence + jitter));
+  addRecent('TH','prize1', prize1); addRecent('TH','top3', top3); addRecent('TH','bottom3', bottom3); addRecent('TH','bottom2', bottom2);
   return { prize1, top3, bottom3, bottom2, confidence };
 }
 
