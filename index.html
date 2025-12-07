@@ -476,6 +476,10 @@ body.bg-moon {
             <label class="text-sm">รางวัลที่ 7 (2 หลัก x4)</label>
             <input id="hnPrize7Input" type="text" class="input-dd w-full" placeholder="เช่น 12,34,56,78" />
           </div>
+          <div>
+            <label class="text-sm">เลขท้าย 2 ตัว</label>
+            <input id="hnTwoBottomInput" type="text" maxlength="2" class="input-dd w-full" placeholder="เช่น 22" />
+          </div>
         </div>
       </div>
 
@@ -910,6 +914,7 @@ function openEditModal(d, t){
       const a = document.getElementById('hnFirst5Input'); if(a) a.value = r.first5||'';
       const b = document.getElementById('hnPrize6Input'); if(b) b.value = r.prize6_list||'';
       const c = document.getElementById('hnPrize7Input'); if(c) c.value = r.prize7_list||'';
+      const d2 = document.getElementById('hnTwoBottomInput'); if(d2) d2.value = r.bottom||'';
     }
   }
 }
@@ -917,7 +922,7 @@ function closeAddModal(){
   document.getElementById('addModal').classList.add('hidden');
   const ttl = document.getElementById('addModalTitle'); if(ttl) ttl.innerText = '🧪 เพิ่มผลรางวัลใหม่';
   // clear fields
-  const ids = ['dateInput','firstPrizeInput','threeBottomAInput','threeBottomBInput','twoBottomInput','laoSixInput','laoLast4Input','laoLast3Input','laoLast2MultiInput','hnFirst5Input','hnPrize6Input','hnPrize7Input'];
+  const ids = ['dateInput','firstPrizeInput','threeBottomAInput','threeBottomBInput','twoBottomInput','laoSixInput','laoLast4Input','laoLast3Input','laoLast2MultiInput','hnFirst5Input','hnPrize6Input','hnPrize7Input','hnTwoBottomInput'];
   ids.forEach(id=>{ const el = document.getElementById(id); if(el) el.value=''; });
   setAddType('TH');
 }
@@ -1015,16 +1020,18 @@ async function saveResult(){
     const hn5 = (document.getElementById('hnFirst5Input')?.value||'').trim();
     const hn6 = (document.getElementById('hnPrize6Input')?.value||'').trim();
     const hn7 = (document.getElementById('hnPrize7Input')?.value||'').trim();
+    const hn2 = (document.getElementById('hnTwoBottomInput')?.value||'').trim();
     const clean5 = s=> (isDigits(s)&&s.length===5 ? s : '');
     const list3 = s=> (s? s.split(',').map(x=>x.trim()).filter(x=>isDigits(x)&&x.length===3) : []);
     const list2 = s=> (s? s.split(',').map(x=>x.trim()).filter(x=>isDigits(x)&&x.length===2) : []);
     const f5 = clean5(hn5);
     const p6 = list3(hn6);
     const p7 = list2(hn7);
-    if(!f5 && p6.length===0 && p7.length===0){ alert('กรุณากรอกอย่างน้อย 1 ช่องสำหรับหวยฮานอย'); return; }
-    const bottomDisplay = p7.length>0 ? p7.join(', ') : '';
+    const b2 = (isDigits(hn2) && hn2.length===2) ? pad(hn2,2) : '';
+    if(!f5 && p6.length===0 && p7.length===0 && !b2){ alert('กรุณากรอกอย่างน้อย 1 ช่องสำหรับหวยฮานอย'); return; }
+    const bottomDisplay = b2 || (p7.length>0 ? p7.join(', ') : '');
     payload = { ...payload, first5: f5, prize6_list: p6.join(', '), prize7_list: p7.join(', '), bottom: bottomDisplay };
-    confirmMsg = `ยืนยันการบันทึกข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateVal}\nรางวัลที่ 1 (5 หลัก): ${f5||'—'}\nรางวัลที่ 6 (3 หลัก x3): ${p6.join(', ')||'—'}\nรางวัลที่ 7 (2 หลัก x4): ${p7.join(', ')||'—'}`;
+    confirmMsg = `ยืนยันการบันทึกข้อมูล\n\nประเภท: ${typeLabel}\nวันที่: ${dateVal}\nรางวัลที่ 1 (5 หลัก): ${f5||'—'}\nรางวัลที่ 6 (3 หลัก x3): ${p6.join(', ')||'—'}\nรางวัลที่ 7 (2 หลัก x4): ${p7.join(', ')||'—'}\nเลขท้าย 2 ตัว: ${bottomDisplay||'—'}`;
   }
 
   const ok = confirm(confirmMsg);
@@ -1164,7 +1171,7 @@ function renderHistory(){
     const p6 = String(r.prize6_list||'').split(',').map(x=>x.trim()).filter(Boolean).join(', ');
     const p7 = String(r.prize7_list||'').split(',').map(x=>x.trim()).filter(Boolean).join(', ');
     return `
-      <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-first5="${r.first5||''}" data-prize6="${r.prize6_list||''}" data-prize7="${r.prize7_list||''}">
+      <div class="result-card p-4" data-date="${r.date}" data-type="${r.type}" data-first5="${r.first5||''}" data-prize6="${r.prize6_list||''}" data-prize7="${r.prize7_list||''}" data-bottom="${r.bottom||''}">
         <div class="flex justify-between items-start mb-3">
           <div class="text-sm text-white/70">${flag} <span class="font-semibold ml-1">${typeLabel}</span></div>
           <div class="flex items-center gap-2">
@@ -1714,10 +1721,11 @@ function runBacktest(){
         const f5 = el.getAttribute('data-first5')||'';
         const p6 = el.getAttribute('data-prize6')||'';
         const p7 = el.getAttribute('data-prize7')||'';
+        const b2 = el.getAttribute('data-bottom')||'';
         real1 = f5||'—';
         realTop = p6||'—';
         realBottom3 = p7||'—';
-        realBottom2 = '—';
+        realBottom2 = b2||'—';
       }
     }
   }
